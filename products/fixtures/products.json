@@ -1,0 +1,35 @@
+[
+{
+    "model": "products.product",
+    "pk": 1,
+    "fields": {
+        "title": "Bad Guy Shirt",
+        "slug": "redshirt",
+        "description": "White Shirt ........ now Red",
+        "price": "699.00",
+        "featured": false
+    }
+},
+{
+    "model": "products.product",
+    "pk": 2,
+    "fields": {
+        "title": "Jeans",
+        "slug": "levi-jeans",
+        "description": "Captain LEVI's Jeans",
+        "price": "999.00",
+        "featured": true
+    }
+},
+{
+    "model": "products.product",
+    "pk": 3,
+    "fields": {
+        "title": "Ninja Headband",
+        "slug": "ninjaheadband",
+        "description": "Head Protector for shinobis of Konoha village.",
+        "price": "399.00",
+        "featured": false
+    }
+}
+]

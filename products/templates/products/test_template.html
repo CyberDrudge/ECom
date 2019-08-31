@@ -1,0 +1,2 @@
+{% url 'checkout_address_create' as checkout_address_create_view %}
+{% include 'addresses/address_form.html' with form=address_form action_url=checkout_address_create_view address_type='shipping' %}

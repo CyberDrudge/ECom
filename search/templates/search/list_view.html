@@ -1,0 +1,14 @@
+{% extends 'products/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% for obj in object_list %}
+            <div class="col">
+                {% include 'products/card.html' with instance=obj %}
+                <!--<a href="{{ obj.get_absolute_url }}"> {{ obj }} </a><br>-->
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
