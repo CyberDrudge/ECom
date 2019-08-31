@@ -6,6 +6,7 @@ from django.views.generic import CreateView, FormView
 
 from .forms import LoginForm, RegisterForm, GuestForm
 from .models import GuestEmail
+from .signals import user_logged_in
 
 
 # Create your views here.
@@ -50,6 +51,7 @@ class LoginView(FormView):
         if user is not None:
             # print(request.user.is_authenticated)
             login(request, user)
+            user_logged_in.send(user.__class__, instance=user, request=request)
             try:
                 del request.session['guest_email_id']
             except:
