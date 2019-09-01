@@ -1,0 +1,79 @@
+[
+{
+    "model": "products.product",
+    "pk": 1,
+    "fields": {
+        "title": "Shirt",
+        "slug": "redshirt",
+        "description": "White Shirt ........ now Red",
+        "price": "699.00",
+        "featured": false
+    }
+},
+{
+    "model": "products.product",
+    "pk": 2,
+    "fields": {
+        "title": "Jeans",
+        "slug": "levi-jeans",
+        "description": "Captain LEVI's Jeans",
+        "price": "999.00",
+        "featured": true
+    }
+},
+{
+    "model": "products.product",
+    "pk": 3,
+    "fields": {
+        "title": "Ninja Headband",
+        "slug": "ninjaheadband",
+        "description": "Head Protector for shinobis of Konoha village.",
+        "price": "399.00",
+        "featured": false
+    }
+},
+{
+    "model": "products.product",
+    "pk": 4,
+    "fields": {
+        "title": "T-Shirt",
+        "slug": "t-shirt",
+        "description": "An Awesome T-Shirt, buy it ...",
+        "price": "399.00",
+        "featured": false
+    }
+},
+{
+    "model": "products.product",
+    "pk": 5,
+    "fields": {
+        "title": "OnePlus 7",
+        "slug": "oneplus-7",
+        "description": "Mirror Blue, 6GB RAM, 128GB Storage",
+        "price": "32999.00",
+        "featured": false
+    }
+},
+{
+    "model": "products.product",
+    "pk": 6,
+    "fields": {
+        "title": "Xiaomi Mi A3",
+        "slug": "xiaomi-mi-a3",
+        "description": "Not Just Blue, 4GB RAM, 64GB Storage",
+        "price": "12999.00",
+        "featured": false
+    }
+},
+{
+    "model": "products.product",
+    "pk": 7,
+    "fields": {
+        "title": "Apple MacBook Air",
+        "slug": "apple-macbook-air",
+        "description": "13-inch, 1.8GHz Dual-core Intel Core i5, 8GB RAM, 128GB SSD.\r\nColour: Silver",
+        "price": "71455.00",
+        "featured": false
+    }
+}
+]
