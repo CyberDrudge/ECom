@@ -56,8 +56,11 @@ class UserSession(models.Model):
 def object_viewed_receiver(sender, instance, request, *args, **kwargs):
     # print(sender, instance)
     c_type = ContentType.objects.get_for_model(sender)  # instance.__class__
+    user = None
+    if request.user.is_authenticated:
+        user = request.user
     new_view_obj = ObjectViewed.objects.create(
-        user=request.user,
+        user=user,
         object_id=instance.id,
         content_type=c_type,
         ip_address=get_client_ip(request)
