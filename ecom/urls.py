@@ -18,14 +18,17 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LogoutView
 
-
-from products.views import homepage
 from accounts.views import LoginView, RegisterView, guest_register_page
 from addresses.views import checkout_address_create_view, checkout_address_reuse_view
+# from billing.views import payment_method_view, payment_method_create_view
+from products.views import homepage
+
 
 urlpatterns = [
     path('', homepage, name='home'),
     path('admin/', admin.site.urls),
+    # path('billing/payment_method/', payment_method_view, name='billing_payment_method'),
+    # path('billing/payment_method/create', payment_method_create_view, name='billing_payment_method_endpoint'),
     path('cart/', include('cart.urls', namespace='cart')),
     path('checkout/address/create/', checkout_address_create_view, name='checkout_address_create'),
     path('checkout/address/reuse/', checkout_address_reuse_view, name='checkout_address_reuse'),
