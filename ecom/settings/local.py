@@ -32,7 +32,7 @@ EMAIL_HOST_USER = 'cyberdrudge77@gmail.com'  # sendgrid
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'cyberdrudge719')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'Cyber ECom <cyberdrudge77@gmail.com>'
+DEFAULT_FROM_EMAIL = 'ECom <cyberdrudge77@gmail.com>'
 BASE_URL = '127.0.0.1:8000'
 
 MANAGERS = (

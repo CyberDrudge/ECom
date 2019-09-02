@@ -32,7 +32,7 @@ EMAIL_HOST_USER = 'cyberdrudge77@gmail.com'
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'Cyber ECom <cyberdrudge77@gmail.com>'
+DEFAULT_FROM_EMAIL = 'ECom <cyberdrudge77@gmail.com>'
 BASE_URL = 'https://cyber-ecom.herokuapp.com/'
 
 MANAGERS = (
@@ -90,7 +90,7 @@ ROOT_URLCONF = 'ecom.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
