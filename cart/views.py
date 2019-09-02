@@ -38,7 +38,9 @@ def cart_update(request):
 
 
 def checkout_home(request):
+    # print("In checkout home")
     cart_obj, new_cart = Cart.objects.new_or_get(request)
+    # print(cart_obj, new_cart)
     order_obj = None
     if new_cart or cart_obj.products.count() == 0:
         return redirect('cart:cartview')
@@ -71,17 +73,17 @@ def checkout_home(request):
     #     billing_profile, billing_profile_created = BillingProfile.objects.get_or_create(email=guest_email_obj.email)
     # else:
     #     pass
-    print("Reached???")
+    # print("Reached???")
     address_qs = None
     if billing_profile is not None:
-        print('billing_profile=', billing_profile)
+        # print('billing_profile=', billing_profile, billing_profile_created)
         if request.user.is_authenticated:
             address_qs = Address.objects.filter(billing_profile=billing_profile)
 
         # shipping_address_qs = address_qs.filter(address_type='shipping')
         # billing_address_qs = address_qs.filter(address_type='billing')
         order_obj, order_created = Order.objects.new_or_get(billing_profile, cart_obj)
-        print(order_obj, order_created)
+        # print(order_obj, order_created)
         # order_qs = Order.objects.filter(billing_profile=billing_profile, cart=cart_obj, active=True)
         # if order_qs.count() == 1:
         #     order_obj = order_qs.first()
@@ -91,11 +93,11 @@ def checkout_home(request):
         #     #     old_order_qs.update(active=False)
         #     order_obj = Order.objects.create(billing_profile=billing_profile, cart=cart_obj)
         if shipping_address_id:
-            print("Ship add")
+            # print("Ship add")
             order_obj.shipping_address = Address.objects.get(id=shipping_address_id)
             # del request.session['shipping_address_id']
         if billing_address_id:
-            print('bill add', billing_address_id)
+            # print('bill add', billing_address_id)
             order_obj.billing_address = Address.objects.get(id=billing_address_id)
             # del request.session['billing_address_id']
         if billing_address_id or shipping_address_id:
@@ -119,7 +121,7 @@ def checkout_home(request):
         # 'billing_address_form': billing_address_form,
     }
     # print(billing_profile)
-    print("Printing Context in Cart Views")
+    # print("Printing Context in Cart Views")
     # print(context)
     return render(request, 'cart/checkout.html', context)
 

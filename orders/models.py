@@ -34,7 +34,7 @@ class OrderManager(models.Manager):
         qs = self.get_queryset().filter(
             billing_profile=billing_profile,
             cart=cart_obj, active=True,
-            status='created',
+            status='Created',
         )  # .exclude(status='paid')
         # print(qs)
         if qs.count() == 1:

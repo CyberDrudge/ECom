@@ -6,11 +6,11 @@
                     <h1>Product View History</h1>
                     <hr/>
             </div>
-    {% for obj in object_list %}
-        <div class='col'>
-        {{ forloop.counter }}
-        <!--{% include 'products/snippets/card.html' with instance=obj.content_object %}-->
+            {% for obj in object_list %}
+                <div class='col'>
+                {{ forloop.counter }}
+                {% include 'products/card.html' with instance=obj.content_object %}
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
-</div>
 {% endblock %}

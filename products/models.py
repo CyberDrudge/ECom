@@ -42,6 +42,7 @@ class Product(models.Model):
     description = models.TextField()
     price = models.DecimalField(decimal_places=2, max_digits=7)
     featured = models.BooleanField(default=False)
+
     objects = ProductManager()
 
     def __str__(self):

@@ -20,13 +20,14 @@ def checkout_address_create_view(request):
         # print(request.POST)
         instance = form.save(commit=False)
         billing_profile, billing_created = BillingProfile.objects.new_or_get(request)
+
         if billing_profile:
             address_type = request.POST.get('address_type', 'shipping')
             instance.billing_profile = billing_profile
             instance.address_type = request.POST.get('address_type', 'shipping')
             instance.save()
             request.session[address_type+'_address_id'] = instance.id
-            print(address_type+'_address_id')
+            # print(address_type+'_address_id')
         else:
             # print("Error at addresses views")
             return redirect("cart:checkout")
@@ -39,7 +40,6 @@ def checkout_address_create_view(request):
 
 
 def checkout_address_reuse_view(request):
-    print("Reuse called")
     if request.user.is_authenticated:
         context = {}
         next_ = request.GET.get('next')

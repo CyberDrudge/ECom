@@ -45,6 +45,8 @@ class ObjectViewed(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')  # User id, Product id, Order id
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    objects = ObjectViewedManager()
+
     def __str__(self):
         return f'{self.content_type}/{self.content_object} viewed on {self.timestamp}'
 

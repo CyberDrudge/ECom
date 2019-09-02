@@ -111,7 +111,7 @@ class ProductSlugDetailView(ObjectViewedMixin, DetailView):
 
 class UserProductHistoryView(LoginRequiredMixin, ListView):
     template_name = "products/user-history.html"
-    print("Fetching History")
+    queryset = Product.objects.all()
     # def get_context_data(self, *args, **kwargs):
     #     context = super(ProductListView, self).get_context_data(*args, **kwargs)
     #     print(context)
@@ -130,7 +130,6 @@ class UserProductHistoryView(LoginRequiredMixin, ListView):
         # print(viewed_ids)
         # Products.objects.filter(pk__in=viewed_ids)
         views = request.user.objectviewed_set.by_model(Product, model_queryset=False)
-        print(views)
+        # print(views)
         return views
-
 
