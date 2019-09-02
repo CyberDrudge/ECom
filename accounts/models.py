@@ -136,6 +136,24 @@ class EmailActivation(models.Model):
     def __str__(self):
         return self.email
 
+    def can_activate(self):
+        qs = EmailActivation.objects.filter(pk=self.pk).confirmable()  # 1 object
+        if qs.exists():
+            return True
+        return False
+
+    def activate(self):
+        if self.can_activate():
+            # pre activation user signal
+            user = self.user
+            user.active = True
+            user.save()
+            # post activation signal for user
+            self.activated = True
+            self.save()
+            return True
+        return False
+
     def regenerate(self):
         self.key = None
         self.save()
@@ -146,11 +164,12 @@ class EmailActivation(models.Model):
     def send_activation(self):
         if not self.activated and not self.forced_expired:
             if self.key:
-                base_url = getattr(settings, 'BASE_URL')   # 'https://www.pythonecommerce.com')
+                base_url = getattr(settings, 'BASE_URL')
                 # print(base_url)
                 # key_path = self.key
                 key_path = reverse("account:email-activate", kwargs={'key': self.key})  # use reverse
-                path = "{base}{path}".format(base=base_url, path=key_path)
+                # print(key_path)
+                path = "{base}/{path}".format(base=base_url, path=key_path)
                 context = {
                     'path': path,
                     'email': self.email
@@ -182,10 +201,10 @@ def pre_save_email_activation(sender, instance, *args, **kwargs):
 pre_save.connect(pre_save_email_activation, sender=EmailActivation)
 
 
-def post_save_user_create_reciever(sender, instance, created, *args, **kwargs):
+def post_save_user_create_receiver(sender, instance, created, *args, **kwargs):
     if created:
         obj = EmailActivation.objects.create(user=instance, email=instance.email)
         obj.send_activation()
 
 
-post_save.connect(post_save_user_create_reciever, sender=User)
+post_save.connect(post_save_user_create_receiver, sender=User)
