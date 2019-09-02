@@ -28,15 +28,15 @@ DEBUG = True
 ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
 
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'cyberdrudge77@gmail.com'  # sendgrid
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'cyberdrudge719')
+EMAIL_HOST_USER = 'email@gmail.com'  # sendgrid
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'emailhostpassword')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'ECom <cyberdrudge77@gmail.com>'
+DEFAULT_FROM_EMAIL = 'Django <email@gmail.com>'
 BASE_URL = '127.0.0.1:8000'
 
 MANAGERS = (
-    ('Cyber Drudge', "cyberdrudge77@gmail.com"),
+    ('Cyber Django', "email@gmail.com"),
 )
 
 ADMINS = MANAGERS
