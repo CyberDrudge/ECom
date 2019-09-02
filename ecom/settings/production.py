@@ -27,6 +27,20 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['.herokuapp.com']
 
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'cyberdrudge77@gmail.com'
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'Cyber ECom <cyberdrudge77@gmail.com>'
+BASE_URL = 'https://cyber-ecom.herokuapp.com/'
+
+MANAGERS = (
+    ('Cyber Drudge', "cyberdrudge77@gmail.com"),
+)
+
+ADMINS = MANAGERS
+
 
 # Application definition
 
@@ -51,6 +65,10 @@ INSTALLED_APPS = [
 ]
 
 AUTH_USER_MODEL = 'accounts.User'   # changes the built-in User model to ours
+
+LOGIN_URL = '/login/'
+LOGIN_URL_REDIRECT = '/'
+LOGOUT_URL = '/logout/'
 
 FORCE_SESSION_TO_ONE = False
 FORCE_INACTIVE_USER_ENDSESSION = False

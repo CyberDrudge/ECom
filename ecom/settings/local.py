@@ -25,7 +25,21 @@ SECRET_KEY = 't)24e$+0#1iw33dav#0+9^1xpg0c3m&k*cebx&ogi)^)opg2@7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'cyberdrudge77@gmail.com'  # sendgrid
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'cyberdrudge719')
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'Cyber ECom <cyberdrudge77@gmail.com>'
+BASE_URL = '127.0.0.1:8000'
+
+MANAGERS = (
+    ('Cyber Drudge', "cyberdrudge77@gmail.com"),
+)
+
+ADMINS = MANAGERS
 
 
 # Application definition
@@ -52,6 +66,10 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'accounts.User'   # changes the built-in User model to ours
 
+LOGIN_URL = '/login/'
+LOGIN_URL_REDIRECT = '/'
+LOGOUT_URL = '/logout/'
+
 FORCE_SESSION_TO_ONE = False
 FORCE_INACTIVE_USER_ENDSESSION = False
 
@@ -72,7 +90,7 @@ ROOT_URLCONF = 'ecom.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

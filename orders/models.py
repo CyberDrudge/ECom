@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models.signals import pre_save, post_save
+from django.urls import reverse
 
 from addresses.models import Address
 from billing.models import BillingProfile
@@ -16,6 +17,15 @@ ORDER_STATUS_CHOICES = (
 
 
 # Create your models here.
+class OrderManagerQuerySet(models.query.QuerySet):
+    def by_request(self, request):
+        billing_profile, created = BillingProfile.objects.new_or_get(request)
+        return self.filter(billing_profile=billing_profile)
+
+    def not_created(self):
+        return self.exclude(status='created')
+
+
 class OrderManager(models.Manager):
     def new_or_get(self, billing_profile, cart_obj):
         # print("Fetching Order")
@@ -36,6 +46,12 @@ class OrderManager(models.Manager):
             created = True
         return obj, created
 
+    def get_queryset(self):
+        return OrderManagerQuerySet(self.model, using=self._db)
+
+    def by_request(self, request):
+        return self.get_queryset().by_request(request)
+
 
 class Order(models.Model):
     billing_profile = models.ForeignKey(BillingProfile, on_delete=models.CASCADE, blank=True, null=True)
@@ -47,8 +63,13 @@ class Order(models.Model):
     shipping_total = models.DecimalField(default=10.00, max_digits=10, decimal_places=2)
     total = models.DecimalField(default=0.00, max_digits=10, decimal_places=2)
     active = models.BooleanField(default=True)
+    updated = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     objects = OrderManager()
+
+    class Meta:
+       ordering = ['-timestamp', '-updated']
 
     def __str__(self):
         return self.order_id
@@ -72,6 +93,16 @@ class Order(models.Model):
             self.status = 'paid'
             self.save()
         return self.status
+
+    def get_absolute_url(self):
+        return reverse("orders:detail", kwargs={'order_id': self.order_id})
+
+    def get_status(self):
+        if self.status == "refunded":
+            return "Refunded order"
+        elif self.status == "shipped":
+            return "Shipped"
+        return "Shipping Soon"
 
 
 def pre_save_create_order_id(sender, instance, *args, **kwargs):

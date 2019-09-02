@@ -47,8 +47,8 @@ def checkout_home(request):
     #     order_obj, new_order = Order.objects.get_or_create(cart=cart_obj)
     #     print(order_obj, new_order)
 
-    form = LoginForm()
-    guest_form = GuestForm()
+    form = LoginForm(request=request)
+    guest_form = GuestForm(request=request)
     address_form = AddressForm()
     # billing_address_form = AddressForm()
     billing_address_id = request.session.get('billing_address_id', None)
