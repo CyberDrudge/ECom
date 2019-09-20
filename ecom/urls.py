@@ -18,6 +18,9 @@ from django.urls import path, include
 from django.views.generic import TemplateView, RedirectView
 from django.contrib.auth.views import LogoutView
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 from accounts.views import LoginView, RegisterView, GuestRegisterView
 from addresses.views import checkout_address_create_view, checkout_address_reuse_view
 # from billing.views import payment_method_view, payment_method_create_view
@@ -52,7 +55,7 @@ urlpatterns = [
     # path('detail/<slug>', ProductSlugDetailView.as_view()),
     # path('featured/', ProductFeaturedListView.as_view()),
     # path('featured-detail/<pk>', ProductFeaturedDetailView.as_view()),
-]
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # Add products
 # Profile
