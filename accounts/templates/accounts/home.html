@@ -1,38 +1,11 @@
 {% extends "products/base.html" %}
 
 {% block content %}
-    <div class='row'>
+    <div class='row my-2'>
         <div class='col-12'>
             <h1>Account</h1>
             <hr/>
         </div>
-        <div class='col-12 col-md-3 my-3'>
-            <div class="card">
-              <div class="card-body">
-                <h4 class="card-title">Support</h4>
-                    <div class='list-group'>
-                        <a class='list-group-item' href='#'>About</a>
-                        <a class='list-group-item' href='#'>Contact</a>
-                    </div>
-              </div>
-            </div>
-        </div>
-
-
-
-        <div class='col-12 col-md-3 my-3'>
-            <div class="card">
-              <div class="card-body">
-                <h4 class="card-title">Billing</h4>
-                    <div class='list-group'>
-                        <a class='list-group-item' href='{% url "orders:list" %}'>Orders</a>
-                        <a class='list-group-item' href='#'>Payment Methods</a>
-                        <a class='list-group-item' href='#'>Addresses</a>
-                    </div>
-              </div>
-            </div>
-        </div>
-
 
         <div class='col-12 col-md-3 my-3'>
             <div class="card">
@@ -45,6 +18,19 @@
                         <a class='list-group-item' href='{% url "password_change" %}'>Change Password</a>
                     </div>
 
+              </div>
+            </div>
+        </div>
+
+        <div class='col-12 col-md-3 my-3'>
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Billing</h4>
+                    <div class='list-group'>
+                        <a class='list-group-item' href='{% url "orders:list" %}'>Orders</a>
+                        <a class='list-group-item' href='#'>Payment Methods</a>
+                        <a class='list-group-item' href='{% url "addresses:show_address" %}'>Addresses</a>
+                    </div>
               </div>
             </div>
         </div>
@@ -75,7 +61,28 @@
             </div>
         </div>
 
-    </div>
+        <div class='col-12 col-md-3 my-3'>
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Support</h4>
+                    <div class='list-group'>
+                        <a class='list-group-item' href='#'>About</a>
+                        <!--<a class='list-group-item' href='#'>Contact</a>-->
+                        <div class='list-group-item'>
+                            <div class="row my-1">Contact:
+                            <a class="icon mx-3" href='https://github.com/CyberDrudge' target="_blank">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a class="icon mx-2" href='https://www.linkedin.com/in/satyamsaxena197' target="_blank">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                        </div>
+                        </div>
+                    </div>
+              </div>
+            </div>
+        </div>
 
+    </div>
 
 {% endblock %}

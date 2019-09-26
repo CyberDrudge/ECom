@@ -179,7 +179,7 @@ class AccountEmailActivateView(FormMixin, View):
         return super(AccountEmailActivateView, self).form_valid(form)
 
     def form_invalid(self, form):
-        context = {'form': form, "key": self.key }
+        context = {'form': form, "key": self.key}
         return render(self.request, 'registration/activation-error.html', context)
 
 
