@@ -34,6 +34,7 @@ urlpatterns = [
     path('account/', include('accounts.urls', namespace='account')),
     # path('accounts/', RedirectView.as_view(url='/account')),
     path('accounts/', include("accounts.passwords.urls")),
+    path('addresses/', include("addresses.urls", namespace='addresses')),
     # path('billing/payment_method/', payment_method_view, name='billing_payment_method'),
     # path('billing/payment_method/create', payment_method_create_view, name='billing_payment_method_endpoint'),
     path('cart/', include('cart.urls', namespace='cart')),
@@ -55,10 +56,8 @@ urlpatterns = [
     # path('detail/<slug>', ProductSlugDetailView.as_view()),
     # path('featured/', ProductFeaturedListView.as_view()),
     # path('featured-detail/<pk>', ProductFeaturedDetailView.as_view()),
-]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
 
-# Add products
-# Profile
-# Address
-# product images
-
+if settings.DEBUG:
+    urlpatterns = urlpatterns + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
