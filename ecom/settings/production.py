@@ -163,10 +163,10 @@ USE_TZ = True
 #     os.path.join(os.path.dirname(__file__), 'staticfiles'),     # or whatever you named it
 # )
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
 # Simplified static file serving.
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'ecom.settings.storage.WhiteNoiseStaticFilesStorage'
 
 # https://kirr.co/vklau5
 # Lets Encrypt ssl/tls https
