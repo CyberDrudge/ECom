@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.utils.http import is_safe_url
+from django.urls import reverse
+from django.views.generic import UpdateView
 
 from .forms import AddressForm
 from .models import Address
@@ -63,3 +65,34 @@ def checkout_address_reuse_view(request):
                 return redirect("cart:checkout")
     return redirect("cart:checkout")
 
+
+def show_addresses_view(request):
+    if request.user.is_authenticated:
+        template_name = 'addresses/show_addresses.html'
+        billing_profile, billing_created = BillingProfile.objects.new_or_get(request)
+        queryset = Address.objects.filter(billing_profile=billing_profile)
+        context = {
+            'object_list': queryset
+        }
+        return render(request, template_name, context)
+    else:
+        return redirect("login")
+
+
+class AddressEditView(UpdateView):
+    form_class = AddressForm
+    template_name = 'addresses/address_edit.html'
+
+    def get_object(self, *args, **kwargs):
+        request = self.request
+        pk = self.kwargs.get('pk')
+        instance = Address.objects.filter(id=pk).first()
+        return instance
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(AddressEditView, self).get_context_data(*args, **kwargs)
+        context['title'] = 'Edit Your Address Details'
+        return context
+
+    def get_success_url(self):
+        return reverse("addresses:show_address")

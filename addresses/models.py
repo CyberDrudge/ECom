@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 from billing.models import BillingProfile
 
@@ -28,4 +29,8 @@ class Address(models.Model):
             city=self.city, state=self.state,
             postal=self.postal_code, country=self.country
         )
+
+    def get_edit_url(self):
+        # return f'/addresses/{self.id}'
+        return reverse("addresses:edit", kwargs={'pk': self.id})
 
