@@ -123,7 +123,6 @@ def checkout_home(request):
     # print(billing_profile)
     # print("Printing Context in Cart Views")
     # print(context)
-    # print(order_obj.cart.products.all)
     return render(request, 'cart/checkout.html', context)
 
 
