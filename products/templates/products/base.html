@@ -11,16 +11,20 @@
     <title>eCom</title>
   </head>
   <body>
-    {% include 'products/navbar.html' with brand_name='ECom' %}
+
+  {% include 'products/navbar.html' with brand_name='ECom' %}
+
     <div class="container">
       {% block content %}
         <h1>Welcome to eCom!</h1>
       {% endblock %}
     </div>
+
+
     <!-- Optional JavaScript -->
     {% include 'products/js.html' %}
-    <!--{% block javascipt %}-->
+    <!-- {% block javascipt %} -->
 
-    <!--{% endblock %}-->
+    <!-- {% endblock %} -->
   </body>
 </html>

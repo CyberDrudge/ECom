@@ -1,0 +1,13 @@
+{% block view %}
+<div class="card rounded my-1" style="width: 18rem;">
+  <!--{% if instance.image %}-->
+      <!--<img src='{{ instance.image.url }}' class="card-img-top" alt="No Image Available">-->
+  <!--{% endif %}-->
+  <!--<img src='....' class="card-img-top" alt="No Image Available">-->
+  <div class="card-body rounded">
+    <h5 class="card-title">{{ instance.title }}</h5>
+    <p class="card-text">{{ instance.description }}</p>
+    <a href="{{ instance.get_absolute_url }}" class="btn btn-primary">View</a>
+  </div>
+</div>
+{% endblock %}

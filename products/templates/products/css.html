@@ -10,4 +10,36 @@
 
 <!--Stripe Custom Styling-->
 <!--<link rel="stylesheet" href="{% static 'products/stripe_custom_style.css' %}">-->
+<style>
 
+.card {
+  overflow: hidden;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.15), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  -webkit-transition: .25s box-shadow;
+  transition: .25s box-shadow;
+}
+
+.card:focus,
+.card:hover {
+  box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.25), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
+  transform: scale(1.1, 1.1);
+  <!--transform: skewY(2deg);-->
+}
+
+.card-inverse .card-img-overlay {
+  background-color: rgba(51, 51, 51, 0.85);
+  border-color: rgba(51, 51, 51, 0.85);
+}
+
+.icon{
+    font-size: 25px;
+    transition-duration: 250ms;
+    transition-property: transform;
+    transition-delay: 0s;
+    display:block;
+}
+.icon:hover{
+    transform: scale(2, 2);
+}
+
+</style>

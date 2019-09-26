@@ -8,8 +8,8 @@
             </div>
             {% for obj in object_list %}
                 <div class='col'>
-                {{ forloop.counter }}
-                {% include 'products/card.html' with instance=obj.content_object %}
+                {{ forloop.counter }}.
+                {% include 'products/card_products.html' with instance=obj.content_object %}
                 </div>
             {% endfor %}
         </div>

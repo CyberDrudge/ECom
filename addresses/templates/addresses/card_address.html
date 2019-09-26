@@ -1,0 +1,13 @@
+{% block view %}
+<div class="card my-1 mx-2" style="width: 18rem;">
+    <div class="card-body ">
+        <h5 class="card-title">{{ instance.address_line1 }}</h5>
+        <p class="card-text">{{ instance.get_address }}</p>
+    </div>
+
+    <div class="card-body">
+        <a href="{{ instance.get_edit_url }}" class="card-link mx-1">Edit</a>
+        <a href="#" class="card-link mx-1">Delete</a>
+    </div>
+</div>
+{% endblock %}
