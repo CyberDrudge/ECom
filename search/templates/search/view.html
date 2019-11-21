@@ -12,11 +12,12 @@
             {% include 'search/snippets/search_form.html' %}
         </div>
     {% endif %}
+</div>
 <div class="container">
     <div class="row">
         {% for obj in object_list %}
             <div class="col">
-                {% include 'products/card.html' with instance=obj %}
+                {% include 'products/card_products.html' with instance=obj %}
             </div>
         {% endfor %}
     </div>
