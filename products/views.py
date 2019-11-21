@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, Http404
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
+# from django.views.decorators.cache import cache_page
 
 from .models import Product
 from analytics.signals import object_viewed_signal
@@ -17,17 +18,27 @@ class ProductListView(ListView):
     template_name = 'products/list_view.html'
     # queryset = Product.objects.all()
 
+    def get_context_data(self, *args, **kwargs):
+        context = super(ProductListView, self).get_context_data(*args, **kwargs)
+        cart_obj, new_obj = Cart.objects.new_or_get(self.request)
+        context['cart'] = cart_obj
+        return context
+
     def get_queryset(self):
         return Product.objects.all()
 
 
-# def list_view(request):
-#     template_name = 'products/list_view.html'
-#     queryset = Product.objects.all()
-#     context = {
-#         'object_list': queryset
-#     }
-#     return render(request, template_name, context)
+CACHE_TTL = 60*15
+
+
+# @cache_page(CACHE_TTL)
+def list_view(request):
+    template_name = 'products/list_view.html'
+    queryset = Product.objects.all()
+    context = {
+        'object_list': queryset
+    }
+    return render(request, template_name, context)
 
 
 class ProductDetailView(ObjectViewedMixin, DetailView):
@@ -48,22 +59,6 @@ class ProductDetailView(ObjectViewedMixin, DetailView):
         return instance
 
 
-# def detail_view(request, pk=None, *args, **kwargs):
-#     template_name = 'products/detail_view.html'
-#     # queryset = Product.objects.get(pk=pk)
-#     # queryset = get_object_or_404(Product, pk=pk)
-#
-#     instance = Product.objects.get_by_id(pk)
-#     if instance is None:
-#         raise Http404("Product doesn't Exist")
-#     else:
-#         queryset = instance
-#     context = {
-#         'object': queryset
-#     }
-#     return render(request, template_name, context)
-
-
 class ProductFeaturedListView(ListView):
     template_name = 'products/list_view.html'
 
@@ -81,7 +76,7 @@ class ProductFeaturedDetailView(DetailView):
 
 class ProductSlugDetailView(ObjectViewedMixin, DetailView):
     template_name = 'products/detail_view.html'
-    queryset = Product.objects.all()
+    # queryset = Product.objects.all()
 
     def get_context_data(self, *args, **kwargs):
         request = self.request
@@ -111,17 +106,6 @@ class ProductSlugDetailView(ObjectViewedMixin, DetailView):
 
 class UserProductHistoryView(LoginRequiredMixin, ListView):
     template_name = "products/user-history.html"
-    queryset = Product.objects.all()
-    # def get_context_data(self, *args, **kwargs):
-    #     context = super(ProductListView, self).get_context_data(*args, **kwargs)
-    #     print(context)
-    #     return context
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(UserProductHistoryView, self).get_context_data(*args, **kwargs)
-        cart_obj, new_obj = Cart.objects.new_or_get(self.request)
-        context['cart'] = cart_obj
-        return context
 
     def get_queryset(self, *args, **kwargs):
         request = self.request
@@ -129,6 +113,8 @@ class UserProductHistoryView(LoginRequiredMixin, ListView):
         # viewed_ids = [x.object_id for x in views]
         # print(viewed_ids)
         # Products.objects.filter(pk__in=viewed_ids)
+        x = request.user.objectviewed_set
+        # print(x)
         views = request.user.objectviewed_set.by_model(Product, model_queryset=False)
         # print(views)
         return views

@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
 from .models import Cart
@@ -11,6 +12,19 @@ from products.models import Product
 
 
 # Create your views here.
+def cart_detail_api_view(request):
+    cart_obj, new_obj = Cart.objects.new_or_get(request)
+    products = [{
+        "id": x.id,
+        "url": x.get_absolute_url(),
+        "name": x.title,
+        "price": x.price
+    }
+        for x in cart_obj.products.all()]
+    cart_data = {"products": products, "subtotal": cart_obj.subtotal, "total": cart_obj.total}
+    return JsonResponse(cart_data)
+
+
 def cart_view(request):
     cart_obj, new_obj = Cart.objects.new_or_get(request)
     context = {
@@ -30,10 +44,18 @@ def cart_update(request):
         # print(product_obj)
         if product_obj in cart_obj.products.all():
             cart_obj.products.remove(product_obj)
+            added = False
         else:
             cart_obj.products.add(product_obj)
+            added = True
         request.session['cart_items'] = cart_obj.products.count()
-        # print(request.session['cart_items'])
+        if request.is_ajax():
+            json_data = {
+                "added": added,
+                "removed": not added,
+                "cartItemCount": cart_obj.products.count()
+            }
+            return JsonResponse(json_data)
     return redirect("cart:cartview")
 
 

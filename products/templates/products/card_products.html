@@ -8,6 +8,7 @@
     <h5 class="card-title">{{ instance.title }}</h5>
     <p class="card-text">{{ instance.description }}</p>
     <a href="{{ instance.get_absolute_url }}" class="btn btn-primary">View</a>
+    {% include 'products/snippets/update_cart.html' with product=instance cart=cart %}
   </div>
 </div>
 {% endblock %}
