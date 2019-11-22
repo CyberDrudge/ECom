@@ -24,7 +24,7 @@ from django.conf.urls.static import static
 from accounts.views import LoginView, RegisterView, GuestRegisterView
 from addresses.views import checkout_address_create_view, checkout_address_reuse_view
 from cart.views import cart_detail_api_view
-# from billing.views import payment_method_view, payment_method_create_view
+from billing.views import payment_method_view, payment_method_create_view
 from products.views import homepage
 
 
@@ -36,8 +36,8 @@ urlpatterns = [
     # path('accounts/', RedirectView.as_view(url='/account')),
     path('accounts/', include("accounts.passwords.urls")),
     path('addresses/', include("addresses.urls", namespace='addresses')),
-    # path('billing/payment_method/', payment_method_view, name='billing_payment_method'),
-    # path('billing/payment_method/create', payment_method_create_view, name='billing_payment_method_endpoint'),
+    path('billing/payment_method/', payment_method_view, name='billing_payment_method'),
+    path('billing/payment_method/create/', payment_method_create_view, name='billing_payment_method_endpoint'),
     path('api/cart/', cart_detail_api_view, name='api-cart'),
     path('cart/', include('cart.urls', namespace='cart')),
     path('checkout/address/create/', checkout_address_create_view, name='checkout_address_create'),
