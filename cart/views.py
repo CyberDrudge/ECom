@@ -5,7 +5,7 @@ from django.conf import settings
 from .models import Cart
 from accounts.forms import LoginForm, GuestForm
 from accounts.models import GuestEmail
-from addresses.forms import AddressForm
+from addresses.forms import AddressForm, AddressCheckoutForm
 from addresses.models import Address
 from billing.models import BillingProfile
 from orders.models import Order
@@ -78,7 +78,7 @@ def checkout_home(request):
 
     form = LoginForm(request=request)
     guest_form = GuestForm(request=request)
-    address_form = AddressForm()
+    address_form = AddressCheckoutForm()
     # billing_address_form = AddressForm()
     billing_address_id = request.session.get('billing_address_id', None)
     shipping_address_id = request.session.get('shipping_address_id', None)
@@ -140,6 +140,7 @@ def checkout_home(request):
             #     del request.session['cart_id']
             #     return redirect('cart:checkout_success')
             is_prepared = order_obj.check_done()
+            # print("prepared: ", is_prepared)
             if is_prepared:
                 did_charge, crg_msg = billing_profile.charge(order_obj)
                 if did_charge:
@@ -147,11 +148,11 @@ def checkout_home(request):
                     request.session['cart_items'] = 0
                     del request.session['cart_id']
                     if not billing_profile.user:
-                        ''' is this the best spot?'''
+                        # ''' is this the best spot?'''
                         billing_profile.set_cards_inactive()
                     return redirect("cart:checkout_success")
                 else:
-                    print(crg_msg)
+                    # print(crg_msg)
                     return redirect("cart:checkout")
 
     context = {

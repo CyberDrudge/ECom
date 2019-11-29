@@ -12,7 +12,7 @@
                 <label for="address-{{ address.id }}">
                     <input id="address-{{ address.id }}" type="radio" name="shipping_address"
                     value="{{ address.id}}">
-                    {{ address.address_line1 }}
+                    {{ address.get_short_address }}
                 </label><br>
             {% endfor %}
             <button type="submit" class="btn btn-success">Use Address</button>
