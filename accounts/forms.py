@@ -26,7 +26,7 @@ class LoginForm(forms.Form):
         qs = User.objects.filter(email=email)
         if qs.exists():
             # user email is registered, check active/
-            not_active = qs.filter(active=False)
+            not_active = qs.filter(is_active=False)
             if not_active.exists():
                 # not active, check email activation
                 link = reverse("account:resend-activation")
@@ -131,7 +131,7 @@ class RegisterForm(forms.ModelForm):
         # Save the provided password in hashed format
         user = super(RegisterForm, self).save(commit=False)
         user.set_password(self.cleaned_data["password1"])
-        user.active = False  # send confirmation email via signals
+        user.is_active = False  # send confirmation email via signals
         # obj = EmailActivation.objects.create(user=user)
         # obj.send_activation_email()
         if commit:
@@ -197,7 +197,7 @@ class UserAdminChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('full_name', 'email', 'password', 'active', 'admin')
+        fields = ('full_name', 'email', 'password', 'is_active', 'admin')
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.

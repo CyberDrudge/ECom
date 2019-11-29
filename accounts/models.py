@@ -11,6 +11,9 @@ from django.utils import timezone
 
 from ecom.utils import unique_key_generator
 
+import os
+os.environ['DJANGO_SETTINGS_MODULE'] = 'ecom.settings'
+
 DEFAULT_ACTIVATION_DAYS = getattr(settings, 'DEFAULT_ACTIVATION_DAYS', 7)
 
 
@@ -37,7 +40,7 @@ class UserManager(BaseUserManager):
             full_name=full_name,
         )
         user_obj.set_password(password)
-        user_obj.active = is_active
+        user_obj.is_active = is_active
         user_obj.staff = is_staff
         user_obj.admin = is_admin
         user_obj.save(using=self._db)
@@ -55,7 +58,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
     email = models.EmailField(max_length=255, unique=True)
     full_name = models.CharField(max_length=255, blank=True, null=True)
-    active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
     staff = models.BooleanField(default=False)
     admin = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -78,10 +81,6 @@ class User(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return True
-
-    @property
-    def is_active(self):
-        return self.active
 
     @property
     def is_staff(self):
@@ -146,7 +145,7 @@ class EmailActivation(models.Model):
         if self.can_activate():
             # pre activation user signal
             user = self.user
-            user.active = True
+            user.is_active = True
             user.save()
             # post activation signal for user
             self.activated = True
@@ -178,7 +177,6 @@ class EmailActivation(models.Model):
                 html_ = get_template("registration/emails/verify.html").render(context)
                 subject = '1-Click Email Verification'
                 from_email = settings.DEFAULT_FROM_EMAIL
-                # print(from_email)
                 recipient_list = [self.email]
                 sent_mail = send_mail(
                             subject,
@@ -187,7 +185,7 @@ class EmailActivation(models.Model):
                             recipient_list,
                             html_message=html_,
                             fail_silently=False,
-                    )
+                )
                 return sent_mail
         return False
 
