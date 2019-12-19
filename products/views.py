@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404, Http404
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
-# from django.views.decorators.cache import cache_page
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
 from .models import Product
 from analytics.signals import object_viewed_signal
@@ -14,6 +15,7 @@ def homepage(request):
     return render(request, 'products/base.html', {})
 
 
+@method_decorator(cache_page(60 * 15), name='dispatch')
 class ProductListView(ListView):
     template_name = 'products/list_view.html'
     # queryset = Product.objects.all()

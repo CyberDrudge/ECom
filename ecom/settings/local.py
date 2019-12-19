@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'secret_key'
+SECRET_KEY = 't)24e$+0#1iw33dav#0+9^1xpg0c3m&k*cebx&ogi)^)opg2@7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -28,15 +28,15 @@ DEBUG = True
 ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
 
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'email@gmail.com'  # sendgrid
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'password')
+EMAIL_HOST_USER = 'cyberdrudge77@gmail.com'  # sendgrid
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'newcyberpassword77')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'ECom <email@gmail.com>'
+DEFAULT_FROM_EMAIL = 'ECom <cyberdrudge77@gmail.com>'
 BASE_URL = '127.0.0.1:8000'
 
 MANAGERS = (
-    ('MANager', "email@gmail.com"),
+    ('Cyber Drudge', "cyberdrudge77@gmail.com"),
 )
 
 ADMINS = MANAGERS
@@ -66,15 +66,15 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'accounts.User'   # changes the built-in User model to ours
 
-LOGIN_URL = '/login/'
-LOGIN_URL_REDIRECT = '/'
-LOGOUT_URL = '/logout/'
+STRIPE_PUB_KEY = "pk_test_5M7DOJHCemkDXjUwGQJfMLeQ00WYWfu1kq"
+STRIPE_API_KEY = "sk_test_8RBCg96wVWQLr7R5M8Z1ujP800zjci1Vqv"
 
 FORCE_SESSION_TO_ONE = False
 FORCE_INACTIVE_USER_ENDSESSION = False
 
 
 MIDDLEWARE = [
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -82,8 +82,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
+LOGIN_URL = '/login/'
+LOGIN_URL_REDIRECT = '/'
+LOGOUT_URL = '/logout/'
 LOGOUT_REDIRECT_URL = '/login/'
 ROOT_URLCONF = 'ecom.urls'
 
@@ -154,10 +158,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static_dir'),
+]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Simplified static file serving.
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 
 # https://kirr.co/vklau5
 # Lets Encrypt ssl/tls https
@@ -171,3 +180,14 @@ CSRF_COOKIE_SECURE = False
 SECURE_HSTS_SECONDS = None
 SECURE_HSTS_INCLUDE_SUBDOMAINS = False
 SECURE_FRAME_DENY = False
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        },
+        "KEY_PREFIX": "cached"
+    }
+}
