@@ -178,15 +178,18 @@ class EmailActivation(models.Model):
                 subject = '1-Click Email Verification'
                 from_email = settings.DEFAULT_FROM_EMAIL
                 recipient_list = [self.email]
-                sent_mail = send_mail(
-                            subject,
-                            txt_,
-                            from_email,
-                            recipient_list,
-                            html_message=html_,
-                            fail_silently=False,
-                )
-                return sent_mail
+                print("Sending")
+                # sent_mail = send_mail(
+                #             subject,
+                #             txt_,
+                #             from_email,
+                #             recipient_list,
+                #             html_message=html_,
+                #             # fail_silently=False,
+                # )
+                self.activate()
+                print("Sent")
+                return True
         return False
 
 
