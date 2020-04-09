@@ -3,13 +3,14 @@ from django.urls import path
 from .views import (
     ProductListView,
     ProductDetailView,
-    ProductSlugDetailView
+    ProductSlugDetailView,
+    list_view
     )
 
 app_name = 'products'
 
 urlpatterns = [
-    # path('products-fbv/', list_view),
+    path('products-fbv/', list_view),
     path('', ProductListView.as_view(), name='list'),
     # path('detail-fbv/<pk>', detail_view),
     path('<int:pk>', ProductDetailView.as_view(), name='detail'),

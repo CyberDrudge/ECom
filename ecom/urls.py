@@ -22,7 +22,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from accounts.views import LoginView, RegisterView, GuestRegisterView
-from addresses.views import checkout_address_create_view, checkout_address_reuse_view
+# from addresses.views import checkout_address_create_view, checkout_address_reuse_view, AddressListView
+from addresses.views import (
+    AddressCreateView,
+    AddressListView,
+    AddressUpdateView,
+    checkout_address_create_view,
+    checkout_address_reuse_view
+    )
 from cart.views import cart_detail_api_view
 from billing.views import payment_method_view, payment_method_create_view
 from products.views import homepage
@@ -35,7 +42,11 @@ urlpatterns = [
     path('account/', include('accounts.urls', namespace='account')),
     # path('accounts/', RedirectView.as_view(url='/account')),
     path('accounts/', include("accounts.passwords.urls")),
-    path('addresses/', include("addresses.urls", namespace='addresses')),
+    # path('addresses/', include("addresses.urls", namespace='addresses')),
+    path('address/', RedirectView.as_view(url='/addresses')),
+    path('addresses/', AddressListView.as_view(), name='addresses'),
+    path('addresses/create/', AddressCreateView.as_view(), name='address-create'),
+    path('addresses/<pk>/', AddressUpdateView.as_view(), name='address-update'),
     path('billing/payment_method/', payment_method_view, name='billing_payment_method'),
     path('billing/payment_method/create/', payment_method_create_view, name='billing_payment_method_endpoint'),
     path('api/cart/', cart_detail_api_view, name='api-cart'),
@@ -44,13 +55,13 @@ urlpatterns = [
     path('checkout/address/reuse/', checkout_address_reuse_view, name='checkout_address_reuse'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
-    path('navbar/', TemplateView.as_view(template_name='products/navbar.html')),
+    # path('navbar/', TemplateView.as_view(template_name='products/navbar.html')),
     path('orders/', include("orders.urls", namespace='orders')),
     path('products/', include('products.urls', namespace='products'), name='products'),
     path('register/', RegisterView.as_view(), name='register'),
     path('register/guest/', GuestRegisterView.as_view(), name='guest_register'),
     path('search/', include('search.urls', namespace='search')),
-    path('temp/', TemplateView.as_view(template_name='products/test_template.html')),
+    # path('temp/', TemplateView.as_view(template_name='products/test_template.html')),
     # path('products-fbv/', list_view),
     # path('products/', ProductListView.as_view()),
     # path('detail-fbv/<pk>', detail_view),

@@ -29,7 +29,7 @@ def payment_method_create_view(request):
         token = request.POST.get("token")
         if token is not None:
             new_card_obj = Card.objects.add_new(billing_profile, token)
-            print(new_card_obj)  # start saving our cards too!
+            # print(new_card_obj)  # start saving our cards too!
         return JsonResponse({"message": "Success! Your card was added."})
     return HttpResponse("Error", status_code=401)
 

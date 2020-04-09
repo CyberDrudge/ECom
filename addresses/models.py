@@ -12,8 +12,8 @@ ADDRESS_TYPE = (
 # Create your models here.
 class Address(models.Model):
     billing_profile = models.ForeignKey(BillingProfile, on_delete=models.CASCADE)
-    name = models.CharField(max_length=120, null=True, blank=True, help_text='Shipping to? Who is it for?')
-    nickname = models.CharField(max_length=120, null=True, blank=True, help_text='Internal Reference Nickname')
+    name = models.CharField(max_length=120, null=True, blank=True)
+    nickname = models.CharField(max_length=120, null=True, blank=True)
     address_type = models.CharField(max_length=120, choices=ADDRESS_TYPE)
     address_line1 = models.CharField(max_length=120)
     address_line2 = models.CharField(max_length=120, null=True, blank=True)

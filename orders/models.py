@@ -69,7 +69,7 @@ class Order(models.Model):
     objects = OrderManager()
 
     class Meta:
-       ordering = ['-timestamp', '-updated']
+        ordering = ['-timestamp', '-updated']
 
     def __str__(self):
         return self.order_id
@@ -77,7 +77,8 @@ class Order(models.Model):
     def update_total(self):
         self.total = float(self.shipping_total) + float(self.cart.total)
         self.save()
-        return self.total
+        if self.cart.products.count() == 0:
+            self.delete()
 
     def check_done(self):
         billing_profile = self.billing_profile

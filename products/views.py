@@ -15,7 +15,7 @@ def homepage(request):
     return render(request, 'products/base.html', {})
 
 
-@method_decorator(cache_page(60 * 15), name='dispatch')
+# @method_decorator(cache_page(60 * 15), name='dispatch')
 class ProductListView(ListView):
     template_name = 'products/list_view.html'
     # queryset = Product.objects.all()

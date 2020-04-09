@@ -98,7 +98,8 @@ function redirectToNext(nextPath, timeoffset) {
 }
 
 function stripeTokenHandler(nextUrl, token){
-    // console.log(token.id)
+     console.log(token.id)
+     console.log(nextUrl)
     var paymentMethodEndpoint = '/billing/payment_method/create/'
     var data = {
         'token': token.id
@@ -108,18 +109,17 @@ function stripeTokenHandler(nextUrl, token){
         url: paymentMethodEndpoint,
         method: "POST",
         success: function(data){
-            var succesMsg = data.message || "Success! Your card was added."
+            var successMsg = data.message || "Success! Your card was added."
             card.clear()
             if (nextUrl){
-                succesMsg = succesMsg + "<br/><br/><i class='fa fa-spin fa-spinner'></i> Redirecting..."
+                successMsg = successMsg + "<br/><br/><i class='fa fa-spin fa-spinner'></i> Redirecting..."
             }
             if ($.alert){
-                $.alert(succesMsg)
+                $.alert(successMsg)
             } else {
-                alert(succesMsg)
+                alert(successMsg)
             }
             redirectToNext(nextUrl, 1500)
-
         },
         error: function(error){
             console.log(error)
