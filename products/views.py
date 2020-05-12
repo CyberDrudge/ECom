@@ -3,11 +3,18 @@ from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
+from rest_framework import status
+from rest_framework.generics import ListAPIView
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from .models import Product
+from .serializer import ProductSerializer
 from analytics.signals import object_viewed_signal
 from analytics.mixin import ObjectViewedMixin
 from cart.models import Cart
+from utility.helper import response_format
 
 
 # Create your views here.
@@ -15,25 +22,32 @@ def homepage(request):
     return render(request, 'products/base.html', {})
 
 
-# @method_decorator(cache_page(60 * 15), name='dispatch')
-class ProductListView(ListView):
-    template_name = 'products/list_view.html'
-    # queryset = Product.objects.all()
+# class ProductListView(ListView):
+#     template_name = 'products/list_view.html'
+#     # queryset = Product.objects.all()
 
-    def get_context_data(self, *args, **kwargs):
-        context = super(ProductListView, self).get_context_data(*args, **kwargs)
-        cart_obj, new_obj = Cart.objects.new_or_get(self.request)
-        context['cart'] = cart_obj
-        return context
+#     def get_context_data(self, *args, **kwargs):
+#         context = super(ProductListView, self).get_context_data(*args, **kwargs)
+#         cart_obj, new_obj = Cart.objects.new_or_get(self.request)
+#         context['cart'] = cart_obj
+#         return context
 
-    def get_queryset(self):
-        return Product.objects.all()
-
-
-CACHE_TTL = 60*15
+#     def get_queryset(self):
+#         return Product.objects.all()
 
 
-# @cache_page(CACHE_TTL)
+class ProductListView(APIView):
+    queryset = Product.objects
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        context = self.serializer_class(self.queryset.all(), many=True).data
+        msg = "Product List"
+        context = response_format(True, msg, context)
+        return Response(context, status.HTTP_200_OK)
+
+
 def list_view(request):
     template_name = 'products/list_view.html'
     queryset = Product.objects.all()
@@ -76,9 +90,39 @@ class ProductFeaturedDetailView(DetailView):
         return Product.objects.featured()
 
 
-class ProductSlugDetailView(ObjectViewedMixin, DetailView):
-    template_name = 'products/detail_view.html'
-    # queryset = Product.objects.all()
+# class ProductSlugDetailView(ObjectViewedMixin, DetailView):
+#     template_name = 'products/detail_view.html'
+#     # queryset = Product.objects.all()
+#
+#     def get_context_data(self, *args, **kwargs):
+#         request = self.request
+#         context = super(ProductSlugDetailView, self).get_context_data(*args, **kwargs)
+#         cart_obj, new_obj = Cart.objects.new_or_get(request)
+#         context['cart'] = cart_obj
+#         # print(context)
+#         return context
+#
+#     def get_object(self, *args, **kwargs):
+#         request = self.request
+#         slug = self.kwargs.get('slug')
+#         # instance = get_object_or_404(Product, slug=slug)
+#         try:
+#             instance = Product.objects.get(slug=slug)
+#         except Product.DoesNotExist:
+#             raise Http404("Product doesn't Exist")
+#         except Product.MultipleObjectsReturned:
+#             qs = Product.objects.filter(slug=slug)
+#             instance = qs.first()
+#         except:
+#             raise Http404("Ummmmm ... ")
+#
+#         # object_viewed_signal.send(instance.__class__, instance=instance, request=request)
+#         return instance
+
+
+class ProductSlugDetailView(ObjectViewedMixin, APIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 
     def get_context_data(self, *args, **kwargs):
         request = self.request
@@ -88,22 +132,27 @@ class ProductSlugDetailView(ObjectViewedMixin, DetailView):
         # print(context)
         return context
 
-    def get_object(self, *args, **kwargs):
-        request = self.request
-        slug = self.kwargs.get('slug')
-        # instance = get_object_or_404(Product, slug=slug)
+    def get(self, request, *args, **kwargs):
+        slug = request.GET.get('slug')
+        if not slug:
+            slug = self.kwargs.get('slug')
+        
         try:
             instance = Product.objects.get(slug=slug)
+            print("found")
         except Product.DoesNotExist:
-            raise Http404("Product doesn't Exist")
+            instance = None
         except Product.MultipleObjectsReturned:
             qs = Product.objects.filter(slug=slug)
             instance = qs.first()
         except:
-            raise Http404("Ummmmm ... ")
-
+            instance = None
+        msg = ''
+        context = dict()
+        context['data'] = self.serializer_class(instance).data
+        # context = self.get_context_data(context)
         # object_viewed_signal.send(instance.__class__, instance=instance, request=request)
-        return instance
+        return Response(context, status.HTTP_200_OK)
 
 
 class UserProductHistoryView(LoginRequiredMixin, ListView):
