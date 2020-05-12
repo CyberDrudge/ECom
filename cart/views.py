@@ -1,8 +1,12 @@
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.conf import settings
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from .models import Cart
+from .serializer import CartSerializer
 from accounts.forms import LoginForm, GuestForm
 from accounts.models import GuestEmail
 from addresses.forms import AddressForm, AddressCheckoutForm
@@ -10,6 +14,7 @@ from addresses.models import Address
 from billing.models import BillingProfile
 from orders.models import Order
 from products.models import Product
+from utility.helper import response_format
 
 import stripe
 stripe.api_key = getattr(settings, "STRIPE_API_KEY")
@@ -30,38 +35,73 @@ def cart_detail_api_view(request):
     return JsonResponse(cart_data)
 
 
-def cart_view(request):
-    cart_obj, new_obj = Cart.objects.new_or_get(request)
-    context = {
-        'cart': cart_obj
-    }
-    return render(request, 'cart/home.html', context)
+# def cart_view(request):
+#     cart_obj, new_obj = Cart.objects.new_or_get(request)
+#     context = {
+#         'cart': cart_obj
+#     }
+#     return render(request, 'cart/home.html', context)
 
 
-def cart_update(request):
-    # print(request.POST)
-    product_id = request.POST.get('product_id')
-    # print(product_id)
-    if product_id:
-        product_obj = Product.objects.get(id=product_id)
-        cart_obj, new_obj = Cart.objects.new_or_get(request)
-        # print(cart_obj)
-        # print(product_obj)
-        if product_obj in cart_obj.products.all():
-            cart_obj.products.remove(product_obj)
-            added = False
-        else:
-            cart_obj.products.add(product_obj)
-            added = True
-        request.session['cart_items'] = cart_obj.products.count()
-        if request.is_ajax():
-            json_data = {
-                "added": added,
-                "removed": not added,
-                "cartItemCount": cart_obj.products.count()
-            }
-            return JsonResponse(json_data)
-    return redirect("cart:cartview")
+class CartAPIView(APIView):
+    serializer_class = CartSerializer
+    def post(self, request):
+        cart_id = request.data.get('cart_id')
+        print(cart_id)
+        cart_obj, new_obj = Cart.objects.new_or_get(request, cart_id)
+        # cart_obj = Cart.objects.get(id=106)
+        cart = self.serializer_class(cart_obj).data
+        msg = "Cart Items"
+        context = response_format(success=True, message=msg, data=cart)
+        return Response(context, status.HTTP_200_OK)
+
+
+# def cart_update(request):
+#     # print(request.POST)
+#     product_id = request.POST.get('product_id')
+#     # print(product_id)
+#     if product_id:
+#         product_obj = Product.objects.get(id=product_id)
+#         cart_obj, new_obj = Cart.objects.new_or_get(request)
+#         # print(cart_obj)
+#         # print(product_obj)
+#         if product_obj in cart_obj.products.all():
+#             cart_obj.products.remove(product_obj)
+#             added = False
+#         else:
+#             cart_obj.products.add(product_obj)
+#             added = True
+#         request.session['cart_items'] = cart_obj.products.count()
+#         if request.is_ajax():
+#             json_data = {
+#                 "added": added,
+#                 "removed": not added,
+#                 "cartItemCount": cart_obj.products.count()
+#             }
+#             return JsonResponse(json_data)
+#     return redirect("cart:cartview")
+
+
+class CartUpdateAPIView(APIView):
+    serializer_class = CartSerializer
+    def post(self, request):
+        product_id = request.data.get('product_id')
+        cart_id = request.data.get('cart_id')
+        if product_id:
+            product_obj = Product.objects.get(id=product_id)
+            cart_obj, new_obj = Cart.objects.new_or_get(request, cart_id)
+            if product_obj in cart_obj.products.all():
+                cart_obj.products.remove(product_obj)
+                added = False
+            else:
+                cart_obj.products.add(product_obj)
+                added = True
+            request.session['cart_items'] = cart_obj.products.count()
+        cart = self.serializer_class(cart_obj).data
+        msg = "Cart Updated"
+        context = response_format(success=True, message=msg, data=cart)
+        return Response(context, status.HTTP_200_OK)
+
 
 
 def checkout_home(request):

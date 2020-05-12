@@ -10,8 +10,7 @@ User = settings.AUTH_USER_MODEL
 
 # Create your models here.
 class CartManager(models.Manager):
-    def new_or_get(self, request):
-        cart_id = request.session.get('cart_id', None)
+    def new_or_get(self, request, cart_id):
         qs = self.get_queryset().filter(id=cart_id)
         new_obj = False
         if qs.count() == 1:
