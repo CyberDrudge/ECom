@@ -9,19 +9,19 @@ from django.utils.http import is_safe_url
 from django.views.generic import CreateView, FormView, DetailView, View, UpdateView
 from django.views.generic.edit import FormMixin
 from django.urls import reverse
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from .forms import LoginForm, RegisterForm, GuestForm, ReactivateEmailForm, UserDetailChangeForm
 from .models import GuestEmail, EmailActivation
 from .signals import user_logged_in
+from .utils import get_jwt
 from ecom.mixins import NextUrlMixin, RequestFormAttachMixin
+from utility.helper import response_format
+
 
 # Create your views here.
-
-# @login_required # /accounts/login/?next=/some/path/
-# def account_home_view(request):
-#     return render(request, "accounts/home.html", {})
-
-
 class AccountHomeView(LoginRequiredMixin, DetailView):
     template_name = 'accounts/home.html'
 
@@ -63,36 +63,71 @@ class GuestRegisterView(NextUrlMixin,  RequestFormAttachMixin, CreateView):
         return redirect(self.default_next)
 
 
-class LoginView(NextUrlMixin, RequestFormAttachMixin, FormView):
-    form_class = LoginForm
-    template_name = 'accounts/login.html'
+# class LoginView(NextUrlMixin, RequestFormAttachMixin, FormView):
+#     form_class = LoginForm
+#     template_name = 'accounts/login.html'
+#     success_url = '/'
+#     default_next = '/'
+
+#     def form_valid(self, form):
+#         request = self.request
+#         next_ = request.GET.get('next')
+#         next_post = request.POST.get('next')
+#         redirect_path = next_ or next_post or None
+#         email = form.cleaned_data.get("email")
+#         password = form.cleaned_data.get("password")
+#         user = authenticate(request, username=email, password=password)
+#         if user is not None:
+#             if not user.is_active:
+#                 messages.error(request, "This user is inactive")
+#                 return super(LoginView, self).form_invalid(form)
+#             login(request, user)
+#             user_logged_in.send(user.__class__, instance=user, request=request)
+#             try:
+#                 del request.session['guest_email_id']
+#             except:
+#                 pass
+#             if is_safe_url(redirect_path, request.get_host()):
+#                 return redirect(redirect_path)
+#             else:
+#                 return redirect("/")
+
+#         return super(LoginView, self).form_invalid(form)
+
+class LoginView(NextUrlMixin, RequestFormAttachMixin, APIView):
     success_url = '/'
     default_next = '/'
 
-    def form_valid(self, form):
-        request = self.request
+    def post(self, request):
+        # form = None
         next_ = request.GET.get('next')
         next_post = request.POST.get('next')
         redirect_path = next_ or next_post or None
-        email = form.cleaned_data.get("email")
-        password = form.cleaned_data.get("password")
+        email = request.data.get("email")
+        password = request.data.get("password")
         user = authenticate(request, username=email, password=password)
         if user is not None:
             if not user.is_active:
                 messages.error(request, "This user is inactive")
-                return super(LoginView, self).form_invalid(form)
+                return Response({}, status.HTTP_401_UNAUTHORIZED)
+                # return super(LoginView, self).form_invalid(form)
             login(request, user)
             user_logged_in.send(user.__class__, instance=user, request=request)
-            try:
-                del request.session['guest_email_id']
-            except:
-                pass
-            if is_safe_url(redirect_path, request.get_host()):
-                return redirect(redirect_path)
-            else:
-                return redirect("/")
-
-        return super(LoginView, self).form_invalid(form)
+            token = get_jwt(user)
+            # try:
+            #     del request.session['guest_email_id']
+            # except:
+            #     pass
+            # if is_safe_url(redirect_path, request.get_host()):
+            #     return redirect(redirect_path)
+            # else:
+            #     return redirect("/")
+            msg = "Logged In"
+            context = response_format(success=True, message=msg, data={'token': token})
+            return Response(context, status.HTTP_200_OK)
+        msg = "Authentication Error"
+        context = response_format(success=False, message=msg)
+        return Response(context, status.HTTP_200_OK)
 
 
 def login_page(request):
