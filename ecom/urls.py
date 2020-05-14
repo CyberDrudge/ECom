@@ -27,7 +27,8 @@ from addresses.views import (
     AddressCreateView,
     AddressListView,
     AddressUpdateView,
-    checkout_address_create_view,
+    # checkout_address_create_view,
+    AddressCreateAPIView,
     checkout_address_reuse_view
     )
 from cart.views import cart_detail_api_view
@@ -51,9 +52,10 @@ urlpatterns = [
     path('billing/payment_method/create/', payment_method_create_view, name='billing_payment_method_endpoint'),
     path('api/cart/', cart_detail_api_view, name='api-cart'),
     path('cart/', include('cart.urls', namespace='cart')),
-    path('checkout/address/create/', checkout_address_create_view, name='checkout_address_create'),
+    # path('checkout/address/create/', checkout_address_create_view, name='checkout_address_create'),
+    path('checkout/address/create/', AddressCreateAPIView.as_view(), name='checkout_address_create'),
     path('checkout/address/reuse/', checkout_address_reuse_view, name='checkout_address_reuse'),
-    path('login/', LoginView.as_view(), name='login'),
+    path('login', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     # path('navbar/', TemplateView.as_view(template_name='products/navbar.html')),
     path('orders/', include("orders.urls", namespace='orders')),
