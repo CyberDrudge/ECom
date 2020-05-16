@@ -14,6 +14,7 @@ from addresses.forms import AddressForm, AddressCheckoutForm
 from addresses.models import Address
 from billing.models import BillingProfile
 from orders.models import Order
+from orders.serializer import OrderSerializer
 from products.models import Product
 from utility.helper import response_format
 
@@ -47,7 +48,7 @@ def cart_detail_api_view(request):
 class CartAPIView(APIView):
     serializer_class = CartSerializer
 
-    def get(self, request):
+    def post(self, request):
         cart_id = request.data.get('cart_id')
         cart_obj, new_obj = Cart.objects.new_or_get(request, cart_id)
         cart = self.serializer_class(cart_obj).data
@@ -217,36 +218,21 @@ def checkout_done_view(request):
 
 
 class CheckoutHomeAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def post(self, request):
         user = request.user
-        cart_id = request.GET.get('cart_id')
-        cart_obj, new_cart = Cart.objects.new_or_get(cart_id)
+        cart_id = request.data.get('cart_id')
+        cart_obj, new_cart = Cart.objects.new_or_get(request, cart_id)
         if not cart_obj.user:
             cart_obj.user = user
             cart_obj.save()
-        # print(cart_obj, new_cart)
         order_obj = None
-        if new_cart or cart_obj.products.count() == 0:
-            return redirect('cart:cartview')
-
-        form = LoginForm(request=request)
-        address_form = AddressCheckoutForm()
-        billing_address_id = request.session.get('billing_address_id', None)
-        shipping_address_id = request.session.get('shipping_address_id', None)
+        billing_address_id = request.data.get('billing_address_id', None)
+        shipping_address_id = request.data.get('shipping_address_id', None)
 
         billing_profile, billing_profile_created = BillingProfile.objects.new_or_get(request)
-        print(billing_profile, billing_profile_created)
-
-        address_qs = None
-        has_card = False
         if billing_profile is not None:
-            if user.is_authenticated:
-                address_qs = Address.objects.filter(billing_profile=billing_profile)
-
-            # shipping_address_qs = address_qs.filter(address_type='shipping')
-            # billing_address_qs = address_qs.filter(address_type='billing')
             order_obj, order_created = Order.objects.new_or_get(billing_profile, cart_obj)
 
             if shipping_address_id:
@@ -259,43 +245,10 @@ class CheckoutHomeAPIView(APIView):
                 # del request.session['billing_address_id']
             if billing_address_id or shipping_address_id:
                 order_obj.save()
-            has_card = billing_profile.has_card
-
-            if request.method == "POST":
-                # is_done = order_obj.check_done()
-                # if is_done:
-                #     order_obj.mark_paid()
-                #     request.session['cart_items'] = 0
-                #     del request.session['cart_id']
-                #     return redirect('cart:checkout_success')
-                is_prepared = order_obj.check_done()
-                # print("prepared: ", is_prepared)
-                if is_prepared:
-                    did_charge, crg_msg = billing_profile.charge(order_obj)
-                    if did_charge:
-                        order_obj.mark_paid()
-                        request.session['cart_items'] = 0
-                        del request.session['cart_id']
-                        if not billing_profile.user:
-                            # ''' is this the best spot?'''
-                            billing_profile.set_cards_inactive()
-                        return redirect("cart:checkout_success")
-                    else:
-                        # print(crg_msg)
-                        return redirect("cart:checkout")
-
-        context = {
-            'object': order_obj,
-            'billing_profile': billing_profile,
-            'form': form,
-            # 'guest_form': guest_form,
-            'address_form': address_form,
-            'address_qs': address_qs,
-            # 'billing_address_form': billing_address_form,
-            "has_card": has_card,
-            "publish_key": STRIPE_PUB_KEY,
-        }
-        # print(billing_profile)
-        # print("Printing Context in Cart Views")
-        # print(context)
+            is_done = order_obj.check_done()
+            if is_done:
+                order_obj.mark_paid()
+            order_data = OrderSerializer(order_obj).data
+        message = "Checked Out"
+        context = response_format(success=True, message=message, data=order_data)
         return Response(context, status.HTTP_200_OK)

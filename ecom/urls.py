@@ -25,7 +25,8 @@ from accounts.views import LoginView, RegisterView, GuestRegisterView
 # from addresses.views import checkout_address_create_view, checkout_address_reuse_view, AddressListView
 from addresses.views import (
     AddressCreateView,
-    AddressListView,
+    # AddressListView,
+    AddressListAPIView,
     AddressUpdateView,
     # checkout_address_create_view,
     AddressCreateAPIView,
@@ -45,7 +46,7 @@ urlpatterns = [
     path('accounts/', include("accounts.passwords.urls")),
     # path('addresses/', include("addresses.urls", namespace='addresses')),
     path('address/', RedirectView.as_view(url='/addresses')),
-    path('addresses/', AddressListView.as_view(), name='addresses'),
+    path('addresses/', AddressListAPIView.as_view(), name='addresses'),
     path('addresses/create/', AddressCreateView.as_view(), name='address-create'),
     path('addresses/<pk>/', AddressUpdateView.as_view(), name='address-update'),
     path('billing/payment_method/', payment_method_view, name='billing_payment_method'),
