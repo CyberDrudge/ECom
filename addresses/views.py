@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 
 from .forms import AddressForm, AddressCheckoutForm
 from .models import Address
+from .serializer import AddressSerializer
 from billing.models import BillingProfile
 from utility.helper import response_format
 
@@ -94,17 +95,28 @@ def checkout_address_reuse_view(request):
     return redirect("cart:checkout")
 
 
-def show_addresses_view(request):
-    if request.user.is_authenticated:
-        template_name = 'addresses/show_addresses.html'
-        billing_profile, billing_created = BillingProfile.objects.new_or_get(request)
-        queryset = Address.objects.filter(billing_profile=billing_profile)
-        context = {
-            'object_list': queryset
-        }
-        return render(request, template_name, context)
-    else:
-        return redirect("login")
+# def show_addresses_view(request):
+#     if request.user.is_authenticated:
+#         template_name = 'addresses/show_addresses.html'
+#         billing_profile, billing_created = BillingProfile.objects.new_or_get(request)
+#         queryset = Address.objects.filter(billing_profile=billing_profile)
+#         context = {
+#             'object_list': queryset
+#         }
+#         return render(request, template_name, context)
+#     else:
+#         return redirect("login")
+
+
+# class ShowAddressesAPIView(APIView):
+#     serializer_class = AddressSerializer
+#     def get(self, request):
+#         billing_profile, billing_created = BillingProfile.objects.new_or_get(request)
+#         queryset = Address.objects.filter(billing_profile=billing_profile)
+#         data = AddressSerializer(queryset, many=True).data
+#         message = "Address Added. Redirect to Checkout"
+#         context = response_format(success=True, message=message, data=data)
+#         return Response(context, status.HTTP_200_OK)
 
 
 class AddressEditView(UpdateView):
@@ -126,13 +138,23 @@ class AddressEditView(UpdateView):
         return reverse("addresses:show_address")
 
 
-class AddressListView(LoginRequiredMixin, ListView):
-    template_name = 'addresses/list.html'
+# class AddressListView(LoginRequiredMixin, ListView):
+#     template_name = 'addresses/list.html'
 
-    def get_queryset(self):
-        request = self.request
-        billing_profile, billing_profile_created = BillingProfile.objects.new_or_get(request)
-        return Address.objects.filter(billing_profile=billing_profile)
+#     def get_queryset(self):
+#         request = self.request
+#         billing_profile, billing_profile_created = BillingProfile.objects.new_or_get(request)
+#         return Address.objects.filter(billing_profile=billing_profile)
+
+class AddressListAPIView(APIView):
+    serializer_class = AddressSerializer
+    def get(self, request):
+        billing_profile, billing_created = BillingProfile.objects.new_or_get(request)
+        queryset = Address.objects.filter(billing_profile=billing_profile)
+        data = AddressSerializer(queryset, many=True).data
+        message = "Address Added. Redirect to Checkout"
+        context = response_format(success=True, message=message, data=data)
+        return Response(context, status.HTTP_200_OK)
 
 
 class AddressUpdateView(LoginRequiredMixin, UpdateView):
