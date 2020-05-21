@@ -163,10 +163,24 @@ def login_page(request):
     return render(request, "accounts/login.html", context)
 
 
-class RegisterView(CreateView):
-    form_class = RegisterForm
-    template_name = 'accounts/register.html'
-    success_url = '/login/'
+# class RegisterView(CreateView):
+#     form_class = RegisterForm
+#     template_name = 'accounts/register.html'
+#     success_url = '/login/'
+
+class RegisterAPIView(APIView):
+    def post(self, request):
+        try:
+            form = RegisterForm(request.data)
+            assert(form.is_valid())
+            form.save()
+            msg = "Account Created. Please check your email for activating your account."
+            context = response_format(success=True, message=msg)
+            return Response(context, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            msg = "Failed to create User"
+            context = response_format(success=False, message=msg)   
+            return Response(context, status=status.HTTP_200_OK)
 
 
 User = get_user_model()

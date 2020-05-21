@@ -21,7 +21,12 @@ from django.contrib.auth.views import LogoutView
 from django.conf import settings
 from django.conf.urls.static import static
 
-from accounts.views import LoginView, RegisterView, GuestRegisterView
+from accounts.views import(
+    LoginView, 
+    # RegisterView, 
+    RegisterAPIView,
+    GuestRegisterView
+)
 # from addresses.views import checkout_address_create_view, checkout_address_reuse_view, AddressListView
 from addresses.views import (
     AddressCreateView,
@@ -61,7 +66,7 @@ urlpatterns = [
     # path('navbar/', TemplateView.as_view(template_name='products/navbar.html')),
     path('orders/', include("orders.urls", namespace='orders')),
     path('products/', include('products.urls', namespace='products'), name='products'),
-    path('register/', RegisterView.as_view(), name='register'),
+    path('register', RegisterAPIView.as_view(), name='register'),
     path('register/guest/', GuestRegisterView.as_view(), name='guest_register'),
     path('search/', include('search.urls', namespace='search')),
     # path('temp/', TemplateView.as_view(template_name='products/test_template.html')),
