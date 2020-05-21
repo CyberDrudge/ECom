@@ -39,7 +39,6 @@ def homepage(request):
 class ProductListView(APIView):
     queryset = Product.objects
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         context = self.serializer_class(self.queryset.all(), many=True).data
