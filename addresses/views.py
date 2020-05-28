@@ -152,7 +152,7 @@ class AddressListAPIView(APIView):
         billing_profile, billing_created = BillingProfile.objects.new_or_get(request)
         queryset = Address.objects.filter(billing_profile=billing_profile)
         data = AddressSerializer(queryset, many=True).data
-        message = "Address Added. Redirect to Checkout"
+        message = "List of your Addresses."
         context = response_format(success=True, message=message, data=data)
         return Response(context, status.HTTP_200_OK)
 
