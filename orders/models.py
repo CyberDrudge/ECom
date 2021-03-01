@@ -6,9 +6,10 @@ from addresses.models import Address
 from billing.models import BillingProfile
 from cart.models import Cart
 from ecom.utils import unique_order_id_generator
-
+from products.models import Product
 
 ORDER_STATUS_CHOICES = (
+    ('in_cart', 'In Cart'),
     ('created', 'Created'),
     ('paid', 'Paid'),
     ('shipped', 'Shipped'),
@@ -17,6 +18,29 @@ ORDER_STATUS_CHOICES = (
 
 
 # Create your models here.
+class OrderItem(models.Model):
+    item = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    ordered = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.quantity} of {self.item.title}"
+
+    # def get_total_item_price(self):
+    #     return self.quantity * self.item.price
+    #
+    # def get_total_discount_item_price(self):
+    #     return self.quantity * self.item.discount_price
+    #
+    # def get_amount_saved(self):
+    #     return self.get_total_item_price() - self.get_total_discount_item_price()
+    #
+    # def get_final_price(self):
+    #     if self.item.discount_price:
+    #         return self.get_total_discount_item_price()
+    #     return self.get_total_item_price()
+
+
 class OrderManagerQuerySet(models.query.QuerySet):
     def by_request(self, request):
         billing_profile, created = BillingProfile.objects.new_or_get(request)
