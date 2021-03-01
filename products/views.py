@@ -22,20 +22,6 @@ def homepage(request):
     return render(request, 'products/base.html', {})
 
 
-# class ProductListView(ListView):
-#     template_name = 'products/list_view.html'
-#     # queryset = Product.objects.all()
-
-#     def get_context_data(self, *args, **kwargs):
-#         context = super(ProductListView, self).get_context_data(*args, **kwargs)
-#         cart_obj, new_obj = Cart.objects.new_or_get(self.request)
-#         context['cart'] = cart_obj
-#         return context
-
-#     def get_queryset(self):
-#         return Product.objects.all()
-
-
 class ProductListView(APIView):
     queryset = Product.objects
     serializer_class = ProductSerializer
@@ -45,15 +31,6 @@ class ProductListView(APIView):
         msg = "Product List"
         context = response_format(True, msg, context)
         return Response(context, status.HTTP_200_OK)
-
-
-def list_view(request):
-    template_name = 'products/list_view.html'
-    queryset = Product.objects.all()
-    context = {
-        'object_list': queryset
-    }
-    return render(request, template_name, context)
 
 
 class ProductDetailView(ObjectViewedMixin, DetailView):

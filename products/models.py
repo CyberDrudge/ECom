@@ -3,11 +3,15 @@ from django.db.models.signals import pre_save
 from django.urls import reverse
 from django.db.models import Q
 import random
-
+import os
 from ecom.utils import unique_slug_generator
 
+LABEL_CHOICES = (
+    ('bestseller', 'best-seller'),
+    ('new', 'new')
+)
 
-# Create your models here.
+
 def get_filename_ext(filepath):
     base_name = os.path.basename(filepath)
     name, ext = os.path.splitext(base_name)
@@ -21,9 +25,10 @@ def upload_image_path(instance, filename):
     return "products/{new_filename}/{final_filename}".format(
             new_filename=new_filename,
             final_filename=final_filename
-)
+    )
 
 
+# Create your models here.
 class ProductQuerySet(models.query.QuerySet):
     def featured(self):
         return self.filter(featured=True)
@@ -59,8 +64,9 @@ class Product(models.Model):
     image = models.ImageField(upload_to=upload_image_path, null=True, blank=True)
     description = models.TextField()
     price = models.DecimalField(decimal_places=2, max_digits=7)
+    # discount_price = models.DecimalField(decimal_places=2, max_digits=7)
     featured = models.BooleanField(default=False)
-
+    # label = models.CharField(choices=LABEL_CHOICES, max_length=100)
     objects = ProductManager()
 
     def __str__(self):

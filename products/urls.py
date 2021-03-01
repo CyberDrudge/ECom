@@ -4,13 +4,11 @@ from .views import (
     ProductListView,
     ProductDetailView,
     ProductSlugDetailView,
-    list_view
     )
 
 app_name = 'products'
 
 urlpatterns = [
-    path('products-fbv/', list_view),
     path('', ProductListView.as_view(), name='list'),
     # path('detail-fbv/<pk>', detail_view),
     path('<int:pk>', ProductDetailView.as_view(), name='detail'),
