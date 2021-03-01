@@ -21,6 +21,7 @@ class Address(models.Model):
     country = models.CharField(max_length=120, default='IN')
     state = models.CharField(max_length=120)
     postal_code = models.CharField(max_length=120)
+    is_default = models.BooleanField(default=False)
 
     def __str__(self):
         if self.nickname:
