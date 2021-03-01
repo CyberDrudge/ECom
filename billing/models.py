@@ -43,8 +43,8 @@ class BillingProfile(models.Model):
     def __str__(self):
         return str(self.email)
 
-    def charge(self, order_obj, card=None):
-        return Charge.objects.do(self, order_obj, card)
+    def charge(self, order_obj, card=None, token=None):
+        return Charge.objects.do(self, order_obj, card=card, token=token)
 
     def get_cards(self):
         return self.card_set.all()
@@ -55,7 +55,7 @@ class BillingProfile(models.Model):
     @property
     def has_card(self):  # instance.has_card
         card_qs = self.get_cards()
-        return card_qs.exists() # True or False
+        return card_qs.exists()  # True or False
 
     @property
     def default_card(self):
@@ -97,7 +97,7 @@ class CardManager(models.Manager):
     def add_new(self, billing_profile, token):
         if token:
             customer = stripe.Customer.retrieve(billing_profile.customer_id)
-            stripe_card_response = customer.sources.create(source=token)
+            stripe_card_response = customer.sources.create(source=token.get('id', ""))
             new_card = self.model(
                     billing_profile=billing_profile,
                     stripe_id=stripe_card_response.id,
@@ -130,12 +130,16 @@ class Card(models.Model):
 
 
 class ChargeManager(models.Manager):
-    def do(self, billing_profile, order_obj, card=None): # Charge.objects.do()
+    def do(self, billing_profile, order_obj, card=None, token=None): # Charge.objects.do()
         card_obj = card
         if card_obj is None:
             cards = billing_profile.card_set.filter(default=True) # card_obj.billing_profile
             if cards.exists():
                 card_obj = cards.first()
+        # XNOTE: Temp fix
+        if card_obj is None and token is not None:
+            card_obj = Card.objects.add_new(billing_profile=billing_profile, token=token)
+            print("NEW CARD ADDED")
         if card_obj is None:
             return False, "No cards available"
         c = stripe.Charge.create(
