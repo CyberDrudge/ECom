@@ -60,13 +60,13 @@ class ProductManager(models.Manager):
 
 class Product(models.Model):
     title = models.CharField(max_length=120)
-    slug = models.SlugField(blank=True, unique=True)
+    slug = models.SlugField(max_length=150, blank=True, unique=True)
     image = models.ImageField(upload_to=upload_image_path, null=True, blank=True)
     description = models.TextField()
     price = models.DecimalField(decimal_places=2, max_digits=7)
-    # discount_price = models.DecimalField(decimal_places=2, max_digits=7)
+    discount_price = models.DecimalField(decimal_places=2, max_digits=7, null=True, blank=True)
     featured = models.BooleanField(default=False)
-    # label = models.CharField(choices=LABEL_CHOICES, max_length=100)
+    label = models.CharField(choices=LABEL_CHOICES, max_length=100, null=True, blank=True)
     objects = ProductManager()
 
     def __str__(self):

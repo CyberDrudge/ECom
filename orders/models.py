@@ -7,6 +7,7 @@ from billing.models import BillingProfile
 from cart.models import Cart
 from ecom.utils import unique_order_id_generator
 from products.models import Product
+from coupons.models import Coupon
 
 ORDER_STATUS_CHOICES = (
     ('in_cart', 'In Cart'),
@@ -18,29 +19,6 @@ ORDER_STATUS_CHOICES = (
 
 
 # Create your models here.
-class OrderItem(models.Model):
-    item = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
-    ordered = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.quantity} of {self.item.title}"
-
-    # def get_total_item_price(self):
-    #     return self.quantity * self.item.price
-    #
-    # def get_total_discount_item_price(self):
-    #     return self.quantity * self.item.discount_price
-    #
-    # def get_amount_saved(self):
-    #     return self.get_total_item_price() - self.get_total_discount_item_price()
-    #
-    # def get_final_price(self):
-    #     if self.item.discount_price:
-    #         return self.get_total_discount_item_price()
-    #     return self.get_total_item_price()
-
-
 class OrderManagerQuerySet(models.query.QuerySet):
     def by_request(self, request):
         billing_profile, created = BillingProfile.objects.new_or_get(request)
@@ -84,7 +62,6 @@ class Order(models.Model):
     billing_address = models.ForeignKey(Address, related_name='billing_address', on_delete=models.CASCADE, blank=True, null=True)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     status = models.CharField(max_length=120, default='Created', choices=ORDER_STATUS_CHOICES)
-    shipping_total = models.DecimalField(default=10.00, max_digits=10, decimal_places=2)
     total = models.DecimalField(default=0.00, max_digits=10, decimal_places=2)
     active = models.BooleanField(default=True)
     updated = models.DateTimeField(auto_now=True)
@@ -99,7 +76,7 @@ class Order(models.Model):
         return self.order_id
 
     def update_total(self):
-        self.total = float(self.shipping_total) + float(self.cart.total)
+        self.total = float(self.cart.total)
         self.save()
         if self.cart.products.count() == 0:
             self.delete()
@@ -141,23 +118,23 @@ def pre_save_create_order_id(sender, instance, *args, **kwargs):
 pre_save.connect(pre_save_create_order_id, sender=Order)
 
 
-def post_save_cart_total(sender, instance, created, *args, **kwargs):
-    if not created:
-        cart_obj = instance
-        # cart_total = cart_obj.total
-        cart_id = cart_obj.id
-        qs = Order.objects.filter(cart__id=cart_id)
-        if qs.count() == 1:
-            order_obj = qs.first()
-            order_obj.update_total()
+# def post_save_cart_total(sender, instance, created, *args, **kwargs):
+#     if not created:
+#         cart_obj = instance
+#         # cart_total = cart_obj.total
+#         cart_id = cart_obj.id
+#         qs = Order.objects.filter(cart__id=cart_id)
+#         if qs.count() == 1:
+#             order_obj = qs.first()
+#             order_obj.update_total()
+#
+#
+# post_save.connect(post_save_cart_total, sender=Cart)
 
 
-post_save.connect(post_save_cart_total, sender=Cart)
-
-
-def post_save_order(sender, instance, created, *args, **kwargs):
-    if created:
-        instance.update_total()
-
-
-post_save.connect(post_save_order, sender=Order)
+# def post_save_order(sender, instance, created, *args, **kwargs):
+#     if created:
+#         instance.update_total()
+#
+#
+# post_save.connect(post_save_order, sender=Order)

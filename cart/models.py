@@ -1,9 +1,9 @@
 from django.db import models
 from django.conf import settings
-from django.db.models.signals import pre_save, m2m_changed
+from django.db.models.signals import pre_save, m2m_changed, post_save
 
 from products.models import Product
-from orders.models import OrderItem
+from coupons.models import Coupon
 
 User = settings.AUTH_USER_MODEL
 
@@ -39,10 +39,10 @@ class CartManager(models.Manager):
 
 class Cart(models.Model):
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
-    products = models.ManyToManyField(Product, blank=True)
-    order_item = models.ManyToManyField(OrderItem, blank=True)
     subtotal = models.DecimalField(default=0.00, max_digits=10, decimal_places=2)
     total = models.DecimalField(default=0.00, max_digits=10, decimal_places=2)
+    delivery_charge = models.DecimalField(default=0.00, max_digits=10, decimal_places=2)
+    coupon = models.ForeignKey(Coupon, null=True, blank=True, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -52,26 +52,48 @@ class Cart(models.Model):
         return str(self.id)
 
 
-def m2m_changed_cart_receiver(sender, instance, action, *args, **kwargs):
-    if action == 'post_add' or action == 'post_remove' or action == 'post_clear':
-        cart_items = instance.products.all()
-        total = sum(x.price for x in cart_items)
-        instance.total = total
-        # print(total)
-        # print(action)
-        if instance.subtotal != instance.total:
-            instance.subtotal = instance.total
-            instance.save()
+class OrderItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    ordered = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f"{self.quantity} of {self.product.title}"
 
-m2m_changed.connect(m2m_changed_cart_receiver, sender=Cart.products.through)
+    # def get_total_item_price(self):
+    #     return self.quantity * self.item.price
+    #
+    # def get_total_discount_item_price(self):
+    #     return self.quantity * self.item.discount_price
+    #
+    # def get_amount_saved(self):
+    #     return self.get_total_item_price() - self.get_total_discount_item_price()
+    #
+    # def get_final_price(self):
+    #     if self.item.discount_price:
+    #         return self.get_total_discount_item_price()
+    #     return self.get_total_item_price()
 
 
 def pre_save_cart_receiver(sender, instance, *args, **kwargs):
-    if instance.subtotal > 0:
-        instance.total = instance.subtotal + 10
-    else:
-        instance.total = 0
+    instance.total = instance.subtotal
+    if instance.total > 0 and instance.delivery_charge > 0:
+        instance.total += instance.delivery_charge
+    if instance.coupon:
+        instance.total -= instance.coupon.amount
+    instance.total = max(instance.total, 0)
 
 
 pre_save.connect(pre_save_cart_receiver, sender=Cart)
+
+
+def post_save_order_receiver(sender, instance, *args, **kwargs):
+    cart = instance.cart
+    cart_items = cart.orderitem_set.all()
+    total = sum((item.product.discount_price if item.product.discount_price else item.product.price) * item.quantity for item in cart_items)
+    cart.subtotal = total
+    cart.save()
+
+
+post_save.connect(post_save_order_receiver, sender=OrderItem)
