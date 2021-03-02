@@ -1,5 +1,3 @@
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
 from django.conf import settings
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -8,15 +6,10 @@ from rest_framework.views import APIView
 
 from .models import Cart, OrderItem
 from .serializer import CartSerializer
-from accounts.forms import LoginForm, GuestForm
-from accounts.models import GuestEmail
-from addresses.forms import AddressForm, AddressCheckoutForm
 from addresses.models import Address
 from billing.models import BillingProfile
 from orders.models import Order
 from orders.serializer import OrderSerializer
-from coupons.models import Coupon
-from coupons.serializer import CouponSerializer
 from products.models import Product
 from utility.helper import response_format
 
@@ -31,19 +24,6 @@ ORDER_ITEM_ACTION = {
 
 
 # Create your views here.
-def cart_detail_api_view(request):
-	cart_obj, new_obj = Cart.objects.new_or_get(request)
-	products = [{
-		"id": x.id,
-		"url": x.get_absolute_url(),
-		"name": x.title,
-		"price": x.price
-	}
-		for x in cart_obj.products.all()]
-	cart_data = {"products": products, "subtotal": cart_obj.subtotal, "total": cart_obj.total}
-	return JsonResponse(cart_data)
-
-
 class CartAPIView(APIView):
 	serializer_class = CartSerializer
 
@@ -56,32 +36,6 @@ class CartAPIView(APIView):
 		return Response(context, status.HTTP_200_OK)
 
 
-# def cart_update(request):
-#     # print(request.POST)
-#     product_id = request.POST.get('product_id')
-#     # print(product_id)
-#     if product_id:
-#         product_obj = Product.objects.get(id=product_id)
-#         cart_obj, new_obj = Cart.objects.new_or_get(request)
-#         # print(cart_obj)
-#         # print(product_obj)
-#         if product_obj in cart_obj.products.all():
-#             cart_obj.products.remove(product_obj)
-#             added = False
-#         else:
-#             cart_obj.products.add(product_obj)
-#             added = True
-#         request.session['cart_items'] = cart_obj.products.count()
-#         if request.is_ajax():
-#             json_data = {
-#                 "added": added,
-#                 "removed": not added,
-#                 "cartItemCount": cart_obj.products.count()
-#             }
-#             return JsonResponse(json_data)
-#     return redirect("cart:cartview")
-
-
 class CartUpdateAPIView(APIView):
 	serializer_class = CartSerializer
 
@@ -89,7 +43,7 @@ class CartUpdateAPIView(APIView):
 		product_id = request.data.get('product_id')
 		cart_id = request.data.get('cart_id')
 		action = request.data.get('action')
-		if product_id:
+		if product_id and cart_id:
 			product_obj = Product.objects.get(id=product_id)
 			cart_obj, new_obj = Cart.objects.new_or_get(request, cart_id)
 			item_qs = OrderItem.objects.filter(product=product_obj, cart=cart_obj)
@@ -104,15 +58,10 @@ class CartUpdateAPIView(APIView):
 					item_obj.delete()
 			else:
 				item_obj = OrderItem.objects.create(product=product_obj, cart=cart_obj)
-			# if product_obj in cart_obj.products.all():
-			#     cart_obj.products.remove(product_obj)
-			# else:
-			#     cart_obj.products.add(product_obj)
-			# order_item_obj = OrderItem.objects.create(item=product_obj)
-			# cart_obj.order_item.add(order_item_obj)
-			# request.session['cart_items'] = cart_obj.products.count()
-		cart_obj.refresh_from_db()
-		cart = self.serializer_class(cart_obj).data
+			cart_obj.refresh_from_db()
+			cart = self.serializer_class(cart_obj).data
+		else:
+			cart = {}
 		msg = "Cart Updated"
 		context = response_format(success=True, message=msg, data=cart)
 		return Response(context, status.HTTP_200_OK)

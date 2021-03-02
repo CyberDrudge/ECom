@@ -2,13 +2,12 @@ from django.utils.text import slugify
 
 import random
 import string
+import os
 
 '''
 random_string_generator is located here:
 http://joincfe.com/blog/random-string-generator-in-python/
 '''
-
-# from ecom.utils import random_string_generator
 
 
 def random_string_generator(size=10, chars=string.ascii_lowercase + string.digits):
@@ -64,3 +63,19 @@ def unique_key_generator(instance):
     if qs_exists:
         return unique_slug_generator(instance)
     return key
+
+
+def get_filename_ext(filepath):
+    base_name = os.path.basename(filepath)
+    name, ext = os.path.splitext(base_name)
+    return name, ext
+
+
+def upload_image_path(instance, filename):
+    new_filename = random.randint(1, 3910209312)
+    name, ext = get_filename_ext(filename)
+    final_filename = '{new_filename}{ext}'.format(new_filename=new_filename, ext=ext)
+    return "products/{new_filename}/{final_filename}".format(
+            new_filename=new_filename,
+            final_filename=final_filename
+    )
