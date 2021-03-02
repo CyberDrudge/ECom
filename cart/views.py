@@ -6,15 +6,17 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Cart
+from .models import Cart, OrderItem
 from .serializer import CartSerializer
 from accounts.forms import LoginForm, GuestForm
 from accounts.models import GuestEmail
 from addresses.forms import AddressForm, AddressCheckoutForm
 from addresses.models import Address
 from billing.models import BillingProfile
-from orders.models import Order, OrderItem
+from orders.models import Order
 from orders.serializer import OrderSerializer
+from coupons.models import Coupon
+from coupons.serializer import CouponSerializer
 from products.models import Product
 from utility.helper import response_format
 
@@ -22,31 +24,36 @@ import stripe
 stripe.api_key = getattr(settings, "STRIPE_API_KEY")
 STRIPE_PUB_KEY = getattr(settings, "STRIPE_PUB_KEY")
 
+ORDER_ITEM_ACTION = {
+	'ADD': 1,
+	'REMOVE': 2
+}
+
 
 # Create your views here.
 def cart_detail_api_view(request):
-    cart_obj, new_obj = Cart.objects.new_or_get(request)
-    products = [{
-        "id": x.id,
-        "url": x.get_absolute_url(),
-        "name": x.title,
-        "price": x.price
-    }
-        for x in cart_obj.products.all()]
-    cart_data = {"products": products, "subtotal": cart_obj.subtotal, "total": cart_obj.total}
-    return JsonResponse(cart_data)
+	cart_obj, new_obj = Cart.objects.new_or_get(request)
+	products = [{
+		"id": x.id,
+		"url": x.get_absolute_url(),
+		"name": x.title,
+		"price": x.price
+	}
+		for x in cart_obj.products.all()]
+	cart_data = {"products": products, "subtotal": cart_obj.subtotal, "total": cart_obj.total}
+	return JsonResponse(cart_data)
 
 
 class CartAPIView(APIView):
-    serializer_class = CartSerializer
+	serializer_class = CartSerializer
 
-    def post(self, request):
-        cart_id = request.data.get('cart_id')
-        cart_obj, new_obj = Cart.objects.new_or_get(request, cart_id)
-        cart = self.serializer_class(cart_obj).data
-        msg = "Cart Items"
-        context = response_format(success=True, message=msg, data=cart)
-        return Response(context, status.HTTP_200_OK)
+	def post(self, request):
+		cart_id = request.data.get('cart_id')
+		cart_obj, new_obj = Cart.objects.new_or_get(request, cart_id)
+		cart = self.serializer_class(cart_obj).data
+		msg = "Cart Items"
+		context = response_format(success=True, message=msg, data=cart)
+		return Response(context, status.HTTP_200_OK)
 
 
 # def cart_update(request):
@@ -76,25 +83,39 @@ class CartAPIView(APIView):
 
 
 class CartUpdateAPIView(APIView):
-    serializer_class = CartSerializer
+	serializer_class = CartSerializer
 
-    def post(self, request):
-        product_id = request.data.get('product_id')
-        cart_id = request.data.get('cart_id')
-        if product_id:
-            product_obj = Product.objects.get(id=product_id)
-            cart_obj, new_obj = Cart.objects.new_or_get(request, cart_id)
-            if product_obj in cart_obj.products.all():
-                cart_obj.products.remove(product_obj)
-            else:
-                cart_obj.products.add(product_obj)
-                order_item_obj = OrderItem.create(product_obj)
-                cart_obj.order_items.add(order_item_obj)
-            # request.session['cart_items'] = cart_obj.products.count()
-        cart = self.serializer_class(cart_obj).data
-        msg = "Cart Updated"
-        context = response_format(success=True, message=msg, data=cart)
-        return Response(context, status.HTTP_200_OK)
+	def post(self, request):
+		product_id = request.data.get('product_id')
+		cart_id = request.data.get('cart_id')
+		action = request.data.get('action')
+		if product_id:
+			product_obj = Product.objects.get(id=product_id)
+			cart_obj, new_obj = Cart.objects.new_or_get(request, cart_id)
+			item_qs = OrderItem.objects.filter(product=product_obj, cart=cart_obj)
+			if item_qs.count() == 1:
+				item_obj = item_qs.first()
+				if action == ORDER_ITEM_ACTION['ADD']:
+					item_obj.quantity += 1
+				else:
+					item_obj.quantity -= 1
+				item_obj.save()
+				if item_obj.quantity == 0:
+					item_obj.delete()
+			else:
+				item_obj = OrderItem.objects.create(product=product_obj, cart=cart_obj)
+			# if product_obj in cart_obj.products.all():
+			#     cart_obj.products.remove(product_obj)
+			# else:
+			#     cart_obj.products.add(product_obj)
+			# order_item_obj = OrderItem.objects.create(item=product_obj)
+			# cart_obj.order_item.add(order_item_obj)
+			# request.session['cart_items'] = cart_obj.products.count()
+		cart_obj.refresh_from_db()
+		cart = self.serializer_class(cart_obj).data
+		msg = "Cart Updated"
+		context = response_format(success=True, message=msg, data=cart)
+		return Response(context, status.HTTP_200_OK)
 
 
 # def checkout_home(request):
@@ -143,49 +164,49 @@ class CartUpdateAPIView(APIView):
 #     return render(request, 'cart/checkout.html', context)
 
 class CheckoutHomeAPIView(APIView):
-    # permission_classes = [IsAuthenticated]
+	# permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        user = request.user
-        cart_id = request.data.get('cart_id')
-        cart_obj, new_cart = Cart.objects.new_or_get(request, cart_id)
-        message = ""
-        # XNOTE: if new_cart or cart_obj.products.count() == 0:
-        # return error
+	def post(self, request):
+		user = request.user
+		cart_id = request.data.get('cart_id')
+		cart_obj, new_cart = Cart.objects.new_or_get(request, cart_id)
+		message = ""
+		# XNOTE: if new_cart or cart_obj.products.count() == 0:
+		# return error
 
-        #  XNOTE: return if user not authenticated
-        if not cart_obj.user:
-            cart_obj.user = user
-            cart_obj.save()
-        order_obj = None
-        billing_address_id = request.data.get('billing_address_id', None)
-        shipping_address_id = request.data.get('shipping_address_id', None)
+		#  XNOTE: return if user not authenticated
+		if not cart_obj.user:
+			cart_obj.user = user
+			cart_obj.save()
+		order_obj = None
+		billing_address_id = request.data.get('billing_address_id', None)
+		shipping_address_id = request.data.get('shipping_address_id', None)
 
-        billing_profile, billing_profile_created = BillingProfile.objects.new_or_get(request)
-        if billing_profile is not None:
-            # order_obj, order_created = Order.objects.new_or_get(billing_profile, cart_obj)
-            order_obj = Order(billing_profile=billing_profile, cart=cart_obj)
-            if shipping_address_id:
-                order_obj.shipping_address = Address.objects.get(id=shipping_address_id)
-                # del request.session['shipping_address_id']
-            if billing_address_id:
-                order_obj.billing_address = Address.objects.get(id=billing_address_id)
-                # del request.session['billing_address_id']
-            if not billing_address_id or not shipping_address_id:
-                # throw error
-                print("No Address Found")
-            # else:
-            #     order_obj.save()
-            # is_prepared = order_obj.check_done()
-            # print("Prep: ", is_prepared)
-            # if is_prepared:
-            #     did_charge, crg_msg = billing_profile.charge(order_obj)
-            #     print("did_charge: ", did_charge)
-            #     if did_charge:
-            #         order_obj.mark_paid()
-            #         message = "Checked Out"
-            order_data = OrderSerializer(order_obj).data
-        if not message:
-            message = "Checkout Failed"
-        context = response_format(success=True, message=message, data=order_data)
-        return Response(context, status.HTTP_200_OK)
+		billing_profile, billing_profile_created = BillingProfile.objects.new_or_get(request)
+		if billing_profile is not None:
+			# order_obj, order_created = Order.objects.new_or_get(billing_profile, cart_obj)
+			order_obj = Order(billing_profile=billing_profile, cart=cart_obj)
+			if shipping_address_id:
+				order_obj.shipping_address = Address.objects.get(id=shipping_address_id)
+				# del request.session['shipping_address_id']
+			if billing_address_id:
+				order_obj.billing_address = Address.objects.get(id=billing_address_id)
+				# del request.session['billing_address_id']
+			if not billing_address_id or not shipping_address_id:
+				# throw error
+				print("No Address Found")
+			# else:
+			#     order_obj.save()
+			# is_prepared = order_obj.check_done()
+			# print("Prep: ", is_prepared)
+			# if is_prepared:
+			#     did_charge, crg_msg = billing_profile.charge(order_obj)
+			#     print("did_charge: ", did_charge)
+			#     if did_charge:
+			#         order_obj.mark_paid()
+			#         message = "Checked Out"
+			order_data = OrderSerializer(order_obj).data
+		if not message:
+			message = "Checkout Failed"
+		context = response_format(success=True, message=message, data=order_data)
+		return Response(context, status.HTTP_200_OK)

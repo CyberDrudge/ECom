@@ -58,6 +58,7 @@ urlpatterns = [
     path('billing/payment_method/create/', payment_method_create_view, name='billing_payment_method_endpoint'),
     path('api/cart/', cart_detail_api_view, name='api-cart'),
     path('cart/', include('cart.urls', namespace='cart')),
+    path('coupon/', include('coupons.urls', namespace='coupons')),
     # path('checkout/address/create/', checkout_address_create_view, name='checkout_address_create'),
     path('checkout/address/create/', AddressCreateAPIView.as_view(), name='checkout_address_create'),
     path('checkout/address/reuse/', checkout_address_reuse_view, name='checkout_address_reuse'),
