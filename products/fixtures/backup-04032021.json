@@ -1,0 +1,114 @@
+[
+{
+    "model": "products.product",
+    "pk": 1,
+    "fields": {
+        "title": "MSI GL65 Leopard 10SFK-062",
+        "slug": "msi-gl65-leopard-10sfk-062",
+        "image": "products/10092511/10092511.jpg",
+        "description": "MSI GL65 Leopard 10SFK-062 15. 6\" FHD 144Hz 3ms Thin Bezel Gaming Laptop Intel Core i7-10750H GeForce RTX 2070 16GB 512GB NVMe SSD Win 10.",
+        "price": "95000.00",
+        "discount_price": "90000.00",
+        "featured": true,
+        "label": "bestseller"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 2,
+    "fields": {
+        "title": "HP Omen 15.6-inch FHD Gaming Laptop",
+        "slug": "hp-omen-156-inch-fhd-gaming-laptop",
+        "image": "products/2019530910/2019530910.jpg",
+        "description": "It\u2019s not just another gaming laptop, it\u2019s THE gaming laptop. Obviously, the OMEN 15 has a powerful AMD processor and NVIDIA\u00ae graphics in a compact frame. Did we mention it has a fast display and long battery life? Yeah, it has everything and you can take it even further with OMEN Command Center. So, just enjoy those envious looks while you play, it\u2019s only natural with a beautiful machine.",
+        "price": "80000.00",
+        "discount_price": null,
+        "featured": false,
+        "label": null
+    }
+},
+{
+    "model": "products.product",
+    "pk": 3,
+    "fields": {
+        "title": "LG QHD (2560 x 1440) 32 Inch IPS Display",
+        "slug": "lg-qhd-2560-x-1440-32-inch-ips-display",
+        "image": "products/2392866252/2392866252.jpg",
+        "description": "22 Inch QHD IPS Monitor with HDR 10 and Color Calibrated screen. Lifelike color with IPS and QHD resolution. Lifelike color with IPS and QHD resolution.",
+        "price": "20999.00",
+        "discount_price": null,
+        "featured": false,
+        "label": null
+    }
+},
+{
+    "model": "products.product",
+    "pk": 4,
+    "fields": {
+        "title": "AMD Ryzen 5 3600 Desktop Processor",
+        "slug": "amd-ryzen-5-3600-desktop-processor",
+        "image": "products/2264842915/2264842915.jpg",
+        "description": "AMD Ryzen 5 3600 3rd Generation Destop Processor Upto 4.2 GHz 6 Core 12 Threads AM4 Socket 35MB Cache Desktop Processor with Wraith Stealth Thermal Solution",
+        "price": "18200.00",
+        "discount_price": null,
+        "featured": false,
+        "label": null
+    }
+},
+{
+    "model": "products.product",
+    "pk": 5,
+    "fields": {
+        "title": "ASUS ROG Strix GT15 10th Gen Intel Core i7-10700 Gaming Desktop",
+        "slug": "asus-rog-strix-gt15-10th-gen-intel-gaming-desktop",
+        "image": "products/2278268555/2278268555.jpg",
+        "description": "Give yourself a competitive edge in esports with the battle ready ROG Strix GT15. Designed inside and out for a superior gameplay, this cooling-focused, compact Windows 10 Home gaming desktop uses Up to an NVIDIA\u00ae GeForce\u00ae RTX 2070 SUPER\u2122 graphics card and a powerful Up to Intel\u00ae Core\u2122 10th Gen i7 CPU to deliver fluid visuals at high frame rates and responsive performance for everyday multitasking. Thoughtful details like a built-in carrying handle and headphone hook keep it neat and portable, while customizable Aura Sync accents lets every player show off their individual style.",
+        "price": "99990.00",
+        "discount_price": null,
+        "featured": true,
+        "label": null
+    }
+},
+{
+    "model": "products.product",
+    "pk": 6,
+    "fields": {
+        "title": "Logitech G102 Light Sync Gaming Mouse with Customizable RGB Lighting",
+        "slug": "logitech-g102-light-sync",
+        "image": "products/641478306/641478306.jpg",
+        "description": "G102 LIGHTSYNC is ready to play with an 8,000 DPI sensor and customisable, vibrant LIGHTSYNC RGB. LIGHTSYNC RGB can be customised with colour wave effects or patterns across 16.8 million colours to suit your play style, setup and mood. The gaming-grade sensor responds precisely to your movements and you can customise the settings to suit the sensitivity you like. The simple 6-button layout and classic gaming shape form a comfortable, time-tested and loved design, with buttons that you can programme to simplify tasks. Primary buttons are mechanical and tensioned with durable metal springs for reliability, performance and an excellent feel. Advanced features require Logitech G HUB Gaming Software.",
+        "price": "1595.00",
+        "discount_price": "1100.00",
+        "featured": false,
+        "label": "bestseller"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 7,
+    "fields": {
+        "title": "Redgear Pro Series Wired Gamepad Plug and Play Support for All PC Games",
+        "slug": "redgear-pro-series-wired-gamepad-plug-and-play-support-for-all-pc-games",
+        "image": "products/658803664/658803664.jpg",
+        "description": "Redgear Pro series wired gamepad uses the latest and ultra precise VR on the left and right stick to help you game like a pro, no more dead zones while playing your FPS games and allows better control for angles on sports games. Redgear Smartline gamepad comes with X-input and direct-input compatibility that allows you to play all the latest games in plug and play mode, easily move between X-input mode and direct-input mode with a dedicated switch. No more hassles of downloading software from in the internet to use your gamepad for new games. If you want to play your old classics not to worry just install the driver provided in the box and you can enjoy all your classics. Jazz up your gaming space with our new Pro series controller with backlit illuminated ABXY keys.",
+        "price": "1199.00",
+        "discount_price": null,
+        "featured": false,
+        "label": null
+    }
+},
+{
+    "model": "products.product",
+    "pk": 8,
+    "fields": {
+        "title": "Gigabyte Nvidia GeForce RTX 3070 Gaming OC 8GB GDDR6 Graphics Card",
+        "slug": "gigabyte-nvidia-geforce-r",
+        "image": "products/3569546192/3569546192.jpg",
+        "description": "Gigabyte's GV-N3070GAMING OC-8GD graphics card is powered by Nvidia GeForce RTX\u2122 3070 GPU and Integrated with 8GB GDDR6 256-bit memory interface and 3X Windforce Cooling system. The WINDFORCE 3X cooling system features 3X80mm unique blade fans, alternate spinning, 5 composite copper heat pipes direct touch GPU, 3D active fan and Screen cooling, which together provide high efficiency heat dissipation.",
+        "price": "60000.00",
+        "discount_price": null,
+        "featured": true,
+        "label": "new"
+    }
+}
+]
