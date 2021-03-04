@@ -13,20 +13,18 @@ class CouponDetailView(APIView):
 	queryset = Coupon.objects
 	serializer_class = CartSerializer
 
-	def get(self, request):
-		code = request.GET.get('code', None)
-		cart_id = request.GET.get('cart_id', None)
+	def post(self, request):
+		code = request.data.get('code', None)
+		cart_id = request.data.get('cart_id', None)
 		if code is None:
 			return Response({"message": "Invalid Data Received"}, status=status.HTTP_200_OK)
 		coupon = self.queryset.get_by_code(code)
-		print(coupon)
 		if coupon is None:
 			return Response({"message": "Invalid Coupon"}, status=status.HTTP_200_OK)
 		if cart_id:
 			cart_obj, new_obj = Cart.objects.new_or_get(request, cart_id)
 			cart_obj.coupon = coupon
 			cart_obj.save()
-			print(cart_obj)
 			context = self.serializer_class(cart_obj).data
 		else:
 			context = {}
