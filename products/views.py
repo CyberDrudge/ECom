@@ -29,6 +29,8 @@ class ProductListView(APIView):
     def get(self, request):
         context = self.serializer_class(self.queryset.all(), many=True).data
         msg = "Product List"
+        print(context)
+        print("PRODUCT LIST")
         context = response_format(True, msg, context)
         return Response(context, status.HTTP_200_OK)
 
