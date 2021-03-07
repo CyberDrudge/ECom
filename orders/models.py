@@ -78,8 +78,6 @@ class Order(models.Model):
     def update_total(self):
         self.total = float(self.cart.total)
         self.save()
-        if self.cart.products.count() == 0:
-            self.delete()
 
     def check_done(self):
         billing_profile = self.billing_profile
@@ -132,9 +130,9 @@ pre_save.connect(pre_save_create_order_id, sender=Order)
 # post_save.connect(post_save_cart_total, sender=Cart)
 
 
-# def post_save_order(sender, instance, created, *args, **kwargs):
-#     if created:
-#         instance.update_total()
-#
-#
-# post_save.connect(post_save_order, sender=Order)
+def post_save_order(sender, instance, created, *args, **kwargs):
+    if created:
+        instance.update_total()
+
+
+post_save.connect(post_save_order, sender=Order)
