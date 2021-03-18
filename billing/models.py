@@ -80,10 +80,8 @@ post_save.connect(user_created_receiver, sender=User)
 
 def billing_profile_created(sender, instance, *args, **kwargs):
     if not instance.customer_id and instance.email:
-        print("ACTUAL API REQUEST Send to stripe")
         customer = stripe.Customer.create(email=instance.email)
         instance.customer_id = customer.id
-        print(customer)
 
 
 pre_save.connect(billing_profile_created, sender=BillingProfile)
@@ -139,7 +137,6 @@ class ChargeManager(models.Manager):
         # XNOTE: Temp fix
         if card_obj is None and token is not None:
             card_obj = Card.objects.add_new(billing_profile=billing_profile, token=token)
-            print("NEW CARD ADDED")
         if card_obj is None:
             return False, "No cards available"
         c = stripe.Charge.create(

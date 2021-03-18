@@ -57,7 +57,6 @@ class PlaceOrderAPIView(APIView):
         billing_address_id = request.data.get('billing_address_id', None)
         shipping_address_id = request.data.get('shipping_address_id', None)
         token = request.data.get('token', None)
-        print("Token", token)
         billing_profile, billing_profile_created = BillingProfile.objects.new_or_get(request)
         if billing_profile is not None:
             order_obj, order_created = Order.objects.new_or_get(billing_profile, cart_obj)
@@ -69,14 +68,12 @@ class PlaceOrderAPIView(APIView):
                 # del request.session['billing_address_id']
             if not billing_address_id or not shipping_address_id:
                 # throw error
-                print("No Address Found")
+                pass
             else:
                 order_obj.save()
             is_prepared = order_obj.check_done()
-            print("Prep: ", is_prepared)
             if is_prepared:
                 did_charge, crg_msg = billing_profile.charge(order_obj, token=token)
-                print("did_charge: ", did_charge)
                 if did_charge:
                     order_obj.mark_paid()
                     message = "Checked Out"

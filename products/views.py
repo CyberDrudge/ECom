@@ -115,7 +115,6 @@ class ProductSlugDetailView(ObjectViewedMixin, APIView):
         
         try:
             instance = Product.objects.get(slug=slug)
-            print("found")
         except Product.DoesNotExist:
             instance = None
         except Product.MultipleObjectsReturned:
